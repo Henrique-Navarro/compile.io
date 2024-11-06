@@ -1,0 +1,17 @@
+.error-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.error-tooltip:hover::after {
+  content: attr(title);
+  position: absolute;
+  background-color: red;
+  color: white;
+  padding: 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 1000;
+  left: 0;
+  top: -25px;
+}

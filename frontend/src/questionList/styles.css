@@ -1,0 +1,136 @@
+.main-container {
+  width: 900px;
+  background-color: #262626;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  border-radius: 8px;
+}
+
+.question-box {
+  background-color: #333333;
+  padding: 16px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.question-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.question-info h1 {
+  color: #e0e0e0;
+  font-size: 1.25rem;
+  font-family: "Title Font", sans-serif;
+}
+
+.difficulty {
+  color: #a0aec0;
+  font-size: 0.875rem;
+}
+
+.description {
+  color: #f5f5f5;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.icon {
+  color: #e0e0e0;
+  font-size: 1.5rem;
+}
+
+.solve-button {
+  background-color: #48bb78;
+  color: #f5f5f5;
+  border-radius: 4px;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+}
+
+.solved-button {
+  border: 1px solid #f5f5f5;
+  color: #f5f5f5;
+  border-radius: 4px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.easy {
+  color: green;
+}
+
+.medium {
+  color: orange;
+}
+
+.hard {
+  color: crimson;
+}
+
+#webcrumbs {
+  background-color: #262626;
+}
+
+/* theme_styles.css */
+
+/* Tema claro (padrão) */
+.light-theme {
+  --background-color: #ffffff;
+  --text-color: #000000;
+  --nav-background: #f0f0f0;
+}
+
+/* Tema escuro */
+.dark-theme {
+  --background-color: #1e1e1e;
+  --text-color: #ffffff;
+  --nav-background: #333333;
+}
+
+/* Aplicando variáveis globais */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+}
+
+nav {
+  background-color: var(--nav-background);
+  padding: 10px;
+  color: var(--text-color);
+}
+
+button {
+  background-color: var(--nav-background);
+  color: var(--text-color);
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.8;
+}

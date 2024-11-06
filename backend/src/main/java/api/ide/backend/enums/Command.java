@@ -45,6 +45,7 @@ public enum Command {
         String[] baseCommand = buildDockerCommand();
 
         String[] commandWithInput = Arrays.copyOf(baseCommand, baseCommand.length + 1);
+
         commandWithInput[commandWithInput.length - 1] = input;
 
         return commandWithInput;
@@ -57,7 +58,13 @@ public enum Command {
      * docker run --rm -v volumePath gcc gcc main.c -o main
      */
     public String[] buildDockerCommand() {
-        String volumePath = DockerVolumePath.USER_DIR.get() + DockerVolumePath.APP_PATH.get();
+
+        /**
+         * local file   :container file
+         * C:\Code\tcc\compile.io\backend\tempfiles :/usr/src/app
+         */
+        String volumePath = DockerVolumePath.USER_DIR.get() + "\\tempfiles" + DockerVolumePath.APP_PATH.get();
+
         String languageCommand = command[0];
         String mainFile = command[1];
 

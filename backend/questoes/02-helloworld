@@ -1,0 +1,59 @@
+<questao>
+    <title>Questão Hello World!</title>
+    <enunciado>Crie um programa que imprima "Hello World" na tela.</enunciado>
+    <inputExample></inputExample>
+    <outputExample>Hello World</outputExample>
+    <baseCode>
+        <language>php</language>
+        <codeDTO><![CDATA[
+        <?php
+        // Escreva seu código aqui
+        ?>]]></codeDTO>
+    </baseCode>
+    <correctCode>
+        <language>php</language>
+        <codeDTO><![CDATA[<?php echo "Hello World"; ?>]]></codeDTO>
+    </correctCode>
+    <testCases>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+        <testCase>
+            <input></input>
+            <expectedOutput>Hello World</expectedOutput>
+        </testCase>
+    </testCases>
+</questao>

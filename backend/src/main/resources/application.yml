@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/compile_io
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+openai:
+  model: gpt-3.5-turbo
+  api:
+    key: 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
+    url: https://api.openai.com/v1/chat/completions

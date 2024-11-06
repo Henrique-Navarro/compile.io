@@ -1,0 +1,61 @@
+<questao>
+    <title>Verificação de Palíndromo</title>
+    <enunciado>Crie uma função que verifica se uma string é um palíndromo (lida da mesma forma de trás para frente).</enunciado>
+    <inputExample>arara</inputExample>
+    <outputExample>true</outputExample>
+    <baseCode>
+        <language>php</language>
+        <codeDTO><![CDATA[<?php
+        $string = $argv[1];
+        ?>]]></codeDTO>
+    </baseCode>
+    <correctCode>
+        <language>php</language>
+        <codeDTO><![CDATA[<?php
+        $string = $argv[1];
+        echo ($string === strrev($string)) ? 'true' : 'false';
+        ?>]]></codeDTO>
+    </correctCode>
+    <testCases>
+        <testCase>
+            <input>madam</input>
+            <expectedOutput>true</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>hello</input>
+            <expectedOutput>false</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>level</input>
+            <expectedOutput>true</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>world</input>
+            <expectedOutput>false</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>racecar</input>
+            <expectedOutput>true</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>deified</input>
+            <expectedOutput>true</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>civic</input>
+            <expectedOutput>true</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>noon</input>
+            <expectedOutput>true</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>python</input>
+            <expectedOutput>false</expectedOutput>
+        </testCase>
+        <testCase>
+            <input>12321</input>
+            <expectedOutput>true</expectedOutput>
+        </testCase>
+    </testCases>
+</questao>
