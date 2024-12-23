@@ -18,7 +18,7 @@ public class CompilerController {
     public ResponseEntity<ProcessOutputDTO> compile(
             @RequestBody CodeDTO codeDTO
     ) {
-        ProcessOutputDTO output = compiler.compile(codeDTO);
+        ProcessOutputDTO output = compiler.run(codeDTO);
         return ResponseEntity.ok(output);
     }
 }

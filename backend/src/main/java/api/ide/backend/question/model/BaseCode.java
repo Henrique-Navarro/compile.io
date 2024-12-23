@@ -16,6 +16,7 @@ public class BaseCode {
 
     @Lob
     @NotEmpty(message = "Code is required")
+    @Column(columnDefinition = "LONGTEXT")
     private String code;
 
     @ManyToOne

@@ -97,7 +97,7 @@ public class QuestionHandler {
         /** Another attributes */
         existingQuestion.setTitle(updatedQuestion.getTitle());
         existingQuestion.setDescription(updatedQuestion.getDescription());
-        existingQuestion.setObjetive(updatedQuestion.getObjetive());
+        existingQuestion.setObjective(updatedQuestion.getObjective());
         existingQuestion.setTask(updatedQuestion.getTask());
         existingQuestion.setExplanation(updatedQuestion.getExplanation());
         existingQuestion.setInputExample(updatedQuestion.getInputExample());
@@ -118,5 +118,12 @@ public class QuestionHandler {
         }
 
         service.delete(id);
+    }
+
+    public void deleteAll() {
+        List<Question> questions = this.getAll();
+        for (Question question : questions) {
+            this.delete(question.getId());
+        }
     }
 }

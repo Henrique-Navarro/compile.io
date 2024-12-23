@@ -1,8 +1,15 @@
 package api.ide.backend.dto;
 
+import api.ide.backend.compiler.Language;
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
+
 public class CodeDTO {
 
     private Long questionId;
+
+    @Lob
+    @Column(name = "code", columnDefinition = "LONGTEXT")
     private String code;
     private String language;
     private Long userId;
@@ -12,6 +19,9 @@ public class CodeDTO {
         this.code = code;
         this.language = language;
         this.userId = userId;
+    }
+
+    public CodeDTO() {
     }
 
     public Long getQuestionId() {
@@ -30,7 +40,9 @@ public class CodeDTO {
         this.code = code;
     }
 
-    public String getLanguage() {
+    public Language getLanguage() {
+        Language language = Language.valueOf(this.language.toUpperCase());
+
         return language;
     }
 

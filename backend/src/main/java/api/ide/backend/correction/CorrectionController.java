@@ -7,6 +7,7 @@ import api.ide.backend.compiler.ProcessOutputDTO;
 import api.ide.backend.dto.CodeDTO;
 import api.ide.backend.dto.CorrectionDTO;
 import api.ide.backend.question.service.QuestionService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,19 +34,16 @@ public class CorrectionController {
     @Value("${openai.api.url}")
     private String apiUrl;
 
-    // FAZER HISTÒRICO DE SUBMISSÔES
     @PostMapping("/code/run")
-    private ResponseEntity<ProcessOutputDTO> run(@RequestBody CodeDTO codeDTO) {
-        ProcessOutputDTO output = compiler.compile(codeDTO);
+    private ResponseEntity<ProcessOutputDTO> run(@RequestBody @Valid CodeDTO codeDTO) {
+        ProcessOutputDTO output = compiler.run(codeDTO);
         return ResponseEntity.ok(output);
     }
 
     @PostMapping("/code/submit")
-    private ResponseEntity<CorrectionDTO> submit(@RequestBody CodeDTO codeDTO) {
+    private ResponseEntity<CorrectionDTO> submit(@RequestBody @Valid CodeDTO codeDTO, Long userId) {
         CorrectionDTO correctionDTO = correction.submit(codeDTO);
 
-        // se tiver erro, chama o gpt
-        // return ResponseEntity.ok(Reponse)
         return ResponseEntity.ok(correctionDTO);
     }
 

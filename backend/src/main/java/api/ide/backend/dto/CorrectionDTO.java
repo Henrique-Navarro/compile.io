@@ -3,6 +3,8 @@ package api.ide.backend.dto;
 import api.ide.backend.correction.TestResult;
 import api.ide.backend.feedback.FeedbackGenerator;
 import api.ide.backend.question.model.Question;
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 
 import java.util.List;
 
@@ -16,18 +18,26 @@ public class CorrectionDTO {
     private boolean isSafetyCode;
 
     private List<TestResult> testResults;
+    @Column(length = 1000)
     private String expectedOutput;
+    @Lob
+    @Column(name = "output", columnDefinition = "LONGTEXT")
     private String output;
     private Long questionId;
     private CodeDTO codeDTO;
     private Long userId;
+
+    private int points;
 
     public CorrectionDTO(CodeDTO codeDTO, List<TestResult> testResults) {
         this.codeDTO = codeDTO;
         this.testResults = testResults;
     }
 
-    public CorrectionDTO(boolean hasErrors, int testsPassed, int testsFailed, String feedback, boolean isSafetyCode, String expectedOutput, String output, Long questionId, CodeDTO codeDTO, List<TestResult> testResults, Long userId) {
+    public CorrectionDTO() {
+    }
+
+    public CorrectionDTO(boolean hasErrors, int testsPassed, int testsFailed, String feedback, boolean isSafetyCode, String expectedOutput, String output, Long questionId, CodeDTO codeDTO, List<TestResult> testResults, Long userId, int points) {
         this.hasErrors = hasErrors;
         this.testsPassed = testsPassed;
         this.testsFailed = testsFailed;
@@ -39,6 +49,7 @@ public class CorrectionDTO {
         this.codeDTO = codeDTO;
         this.testResults = testResults;
         this.userId = userId;
+        this.points = points;
     }
 
     public void generate() {
@@ -68,6 +79,11 @@ public class CorrectionDTO {
 
         /** User */
         this.setUserId(codeDTO.getUserId());
+
+        /** Points */
+        int totalTests = testResults.size();
+        int points = totalTests > 0 ? (int) ((double) testsPassed / totalTests * question.getPoints()) : 0;
+        this.setPoints(points);
     }
 
     public boolean hasErrors() {
@@ -76,6 +92,14 @@ public class CorrectionDTO {
 
     public int getTestsPassed() {
         return testsPassed;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
     }
 
     public void setTestsPassed(int testsPassed) {

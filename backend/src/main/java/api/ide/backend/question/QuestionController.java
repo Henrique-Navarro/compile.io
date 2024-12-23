@@ -18,7 +18,7 @@ public class QuestionController {
         return handler.save(question);
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/get-all")
     public List<Question> getAll() {
         return handler.getAll();
     }
@@ -36,5 +36,10 @@ public class QuestionController {
     @DeleteMapping("/delete/{id}")
     public void delete(@PathVariable Long id) {
         handler.delete(id);
+    }
+
+    @DeleteMapping("/delete-all")
+    public void deleteAll() {
+        handler.deleteAll();
     }
 }

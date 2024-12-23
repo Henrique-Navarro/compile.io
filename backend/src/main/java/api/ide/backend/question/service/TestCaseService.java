@@ -34,11 +34,10 @@ public class TestCaseService {
         return savedTestCases;
     }
 
-    public List<TestCase> getTestCasesByQuestion(Question question, int howMany) {
-        List<TestCase> testCases =
-                question
-                        .getTestCases()
-                        .subList(0, howMany);
+    public List<TestCase> getTestCasesByQuestion(Question question, boolean maxTestCases) {
+        int howMany = maxTestCases ? question.getTestCases().size() : 1;
+
+        List<TestCase> testCases = question.getTestCases().subList(0, howMany);
 
         return new ArrayList<>(testCases);
     }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 const useFetchQuestion = (questionId) => {
   const [question, setQuestion] = useState(null);
@@ -8,9 +8,11 @@ const useFetchQuestion = (questionId) => {
   useEffect(() => {
     const fetchQuestion = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/questions/get/${questionId}`);
+        const response = await fetch(
+          `http://localhost:8080/questions/get/${questionId}`
+        );
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const data = await response.json();
         setQuestion(data);

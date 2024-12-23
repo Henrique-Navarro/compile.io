@@ -1,9 +1,18 @@
 package api.ide.backend.correction;
 
 import api.ide.backend.question.model.TestCase;
+import jakarta.persistence.*;
 
+@Entity
 public class TestResult {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "test_case_id")
     private TestCase testCase;
+    @Lob
+    @Column(name = "output", columnDefinition = "LONGTEXT")
     private String output;
     private boolean passed;
 
@@ -11,6 +20,9 @@ public class TestResult {
         this.testCase = testCase;
         this.output = output;
         this.passed = passed;
+    }
+
+    public TestResult() {
     }
 
     public TestCase getTestCase() {

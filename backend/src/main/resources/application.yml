@@ -13,3 +13,7 @@ openai:
   api:
     key: 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
     url: https://api.openai.com/v1/chat/completions
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:my-secret-key}

@@ -4,9 +4,10 @@ import useSubmitCode from "../hooks/useSubmitCode";
 import { useParams } from "react-router-dom";
 import CodeEditor from "./CodeEditor";
 import Output from "./Output";
-import Result from "./Result";
+import TestsContainer from "./TestsContainer";
 import Button from "../layout/components/Button";
 import Select from "../layout/components/Select";
+import { FaRedo } from "react-icons/fa"; // Importando o ícone de reset
 
 const CodeSubmission = ({ question }) => {
   const [code, setCode] = useState("");
@@ -55,6 +56,14 @@ const CodeSubmission = ({ question }) => {
     setCode(selectedCodeBase ? selectedCodeBase.code : "");
   };
 
+  /** Função para resetar o código */
+  const handleReset = () => {
+    const selectedCodeBase = baseCodes.find(
+      (baseCode) => baseCode.language === language
+    );
+    setCode(selectedCodeBase ? selectedCodeBase.code : "");
+  };
+
   /** Enviar para o backend */
   const handleRun = () => {
     setIsRunLoading(true);
@@ -74,8 +83,28 @@ const CodeSubmission = ({ question }) => {
 
   return (
     <>
-      <Select language={language} handleLanguageChange={handleLanguageChange} />
-
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Select
+          language={language}
+          handleLanguageChange={handleLanguageChange}
+        />
+        <button
+          onClick={handleReset}
+          style={{
+            border: "none",
+            background: "transparent",
+            cursor: "pointer",
+          }}
+        >
+          <FaRedo size={20} color="white" />
+        </button>
+      </div>
       <CodeEditor
         code={code}
         setCode={setCode}
@@ -98,10 +127,8 @@ const CodeSubmission = ({ question }) => {
           backgroundColor="#48bb78"
         />
       </div>
-
       <Output output={output} inputExample={question.inputExample} />
-
-      <Result resultData={correction} />
+      <TestsContainer resultData={correction} />
     </>
   );
 };

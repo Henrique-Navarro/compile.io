@@ -17,27 +17,36 @@ public class Question {
     private Long id;
 
     @NotEmpty(message = "Title is required")
+    @Column(length = 1000)
     private String title;
 
     @NotEmpty(message = "Description is required")
+    @Column(length = 1000)
     private String description;
 
-    @NotEmpty(message = "Objetive is required")
-    private String objetive;
+    @NotEmpty(message = "Objective is required")
+    @Column(length = 1000)
+    private String objective;
 
     @NotEmpty(message = "Task is required")
+    @Column(length = 1000)
     private String task;
 
     @NotEmpty(message = "Explanation is required")
+    @Column(length = 1000)
     private String explanation;
 
+    @Column(length = 1000)
     private String inputFormat;
+    @Column(length = 1000)
     private String inputExample;
 
     @NotEmpty(message = "Output example is required")
+    @Column(length = 1000)
     private String outputExample;
 
     @NotEmpty(message = "Output format example is required")
+    @Column(length = 1000)
     private String outputFormat;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
@@ -61,11 +70,11 @@ public class Question {
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private List<TestCase> testCases = new ArrayList<>();
 
-    public Question(Long id, String title, String description, String objetive, String task, String explanation, String inputFormat, String inputExample, String outputExample, String outputFormat, List<BaseCode> baseCodes, CorrectCode correctCode, Category category, Level level, int points, List<TestCase> testCases) {
+    public Question(Long id, String title, String description, String objective, String task, String explanation, String inputFormat, String inputExample, String outputExample, String outputFormat, List<BaseCode> baseCodes, CorrectCode correctCode, Category category, Level level, int points, List<TestCase> testCases) {
         this.id = id;
         this.title = title;
         this.description = description;
-        this.objetive = objetive;
+        this.objective = objective;
         this.task = task;
         this.explanation = explanation;
         this.inputFormat = inputFormat;
@@ -107,12 +116,12 @@ public class Question {
         this.description = description;
     }
 
-    public String getObjetive() {
-        return objetive;
+    public String getObjective() {
+        return objective;
     }
 
-    public void setObjetive(String objetive) {
-        this.objetive = objetive;
+    public void setObjective(String objective) {
+        this.objective = objective;
     }
 
     public String getTask() {
@@ -217,7 +226,7 @@ public class Question {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", objetive='" + objetive + '\'' +
+                ", objective='" + objective + '\'' +
                 ", task='" + task + '\'' +
                 ", inputFormat='" + inputFormat + '\'' +
                 ", inputExample='" + inputExample + '\'' +

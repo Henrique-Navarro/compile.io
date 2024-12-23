@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const ResizablePanel = ({ leftWidth, setLeftWidth }) => {
   const [isDragging, setIsDragging] = useState(false);
@@ -20,30 +20,28 @@ const ResizablePanel = ({ leftWidth, setLeftWidth }) => {
 
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener("mousemove", handleMouseMove);
+      window.addEventListener("mouseup", handleMouseUp);
     } else {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
     };
   }, [isDragging]);
 
-  return (
-    <div style={styles.separator} onMouseDown={handleMouseDown} />
-  );
+  return <div style={styles.separator} onMouseDown={handleMouseDown} />;
 };
 
 const styles = {
   separator: {
-    cursor: 'ew-resize',
-    width: '10px',
-    backgroundColor: '#ccc',
-    height: '100%',
+    cursor: "ew-resize",
+    width: "10px",
+    backgroundColor: "black",
+    height: "100%",
   },
 };
 

@@ -53,4 +53,12 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         userRepository.delete(user);
     }
+
+    public void addPoints(Long userId, int points) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setPoints(user.getPoints() + points);
+        userRepository.save(user);
+    }
 }

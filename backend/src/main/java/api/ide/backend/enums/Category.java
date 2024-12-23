@@ -4,5 +4,10 @@ public enum Category {
     POO,
     STRING,
     MATH,
-    ARRAY
+    ARRAY,
+    LOOPS,
+    OPERATIONS,
+    CONDITIONS,
+    CONVERSIONS,
+    NUMBERS
 }

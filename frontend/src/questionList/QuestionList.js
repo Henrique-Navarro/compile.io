@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import useFetchQuestions from '../hooks/useFetchQuestions';
-import './styles.css';
+import React from "react";
+import useFetchQuestions from "../hooks/useFetchQuestions";
+import QuestionItem from "./QuestionItem";
+import "./styles.css";
 
 const QuestionsList = () => {
   const { questions, loading, error } = useFetchQuestions();
@@ -10,36 +10,18 @@ const QuestionsList = () => {
     return <div>Loading...</div>;
   }
 
-  const getLevelStyle = (level) => {
-    if (!level) return 'hard';
-    return level.toLowerCase();
-  };
-
   return (
-    <div className="main-container">
+    <div
+      style={{
+        maxWidth: "960px",
+        margin: "0 auto",
+        padding: "1.5rem",
+        backgroundColor: "#2d3748",
+        color: "#f7fafc",
+      }}
+    >
       {questions.map((question) => (
-        <div key={question.id} className="question-box">
-          <div className="question-header">
-            <div className="question-info">
-              <h1>{question.title}</h1>
-              <p>
-                <span className={`difficulty ${getLevelStyle(question.level)}`}>
-                  {question.level || 'Hard'},
-                </span> 
-                <span>
-                  Max Score: {question.maxScore}, Success Rate: {question.successRate}%
-                </span>
-              </p>
-              <p className="description">{question.description}</p>
-            </div>
-            <div className="actions">
-              <span className="icon">⭐</span>
-              <Link to={`/questions/get/${question.id}`}>
-                <button className="solve-button">Solve Challenge</button>
-              </Link>
-            </div>
-          </div>
-        </div>
+        <QuestionItem key={question.id} question={question} />
       ))}
     </div>
   );

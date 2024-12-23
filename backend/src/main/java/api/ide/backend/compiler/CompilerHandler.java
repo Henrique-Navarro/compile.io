@@ -14,7 +14,7 @@ public class CompilerHandler {
     @Autowired
     private QuestionService questionService;
 
-    public ProcessOutputDTO compile(CodeDTO codeDTO) {
+    public ProcessOutputDTO run(CodeDTO codeDTO) {
         Question question = questionService.getById(codeDTO.getQuestionId());
         return service.compile(codeDTO, question.getInputExample());
     }

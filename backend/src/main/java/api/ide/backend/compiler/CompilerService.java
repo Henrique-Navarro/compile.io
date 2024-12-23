@@ -1,9 +1,6 @@
 package api.ide.backend.compiler;
 
 import api.ide.backend.dto.CodeDTO;
-import api.ide.backend.enums.Command;
-import api.ide.backend.enums.DockerVolumePath;
-import api.ide.backend.enums.MainClass;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -11,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Service
 public class CompilerService {
@@ -26,7 +22,7 @@ public class CompilerService {
      */
     public ProcessOutputDTO compile(CodeDTO codeDTO, String input) {
         try {
-            this.writeCodeOnTempFile(codeDTO);
+            Path file = this.writeCodeOnTempFile(codeDTO);
 
             String[] command = this.getCommandByLanguage(codeDTO, input);
 
@@ -46,28 +42,16 @@ public class CompilerService {
      *
      * @param codeDTO
      */
-    public void writeCodeOnTempFile(CodeDTO codeDTO) {
-        Path path = null;
-
-        String userDirTempFiles = DockerVolumePath.USER_DIR.get() + "\\tempfiles";
-
-        if (codeDTO.getLanguage().equals("php")) {
-            path = Paths.get(userDirTempFiles, MainClass.PHP.get());
-        }
-        if (codeDTO.getLanguage().equals("python")) {
-            path = Paths.get(userDirTempFiles, MainClass.PYTHON.get());
-        }
-        if (codeDTO.getLanguage().equals("java")) {
-            path = Paths.get(userDirTempFiles, MainClass.JAVA.get());
-        }
-        if (codeDTO.getLanguage().equals("c")) {
-            path = Paths.get(userDirTempFiles, MainClass.C.get());
-        }
-
-        String codeLanguage = codeDTO.getCode();
-
+    public Path writeCodeOnTempFile(CodeDTO codeDTO) {
         try {
-            Files.write(path, codeLanguage.getBytes());
+            Language language = codeDTO.getLanguage();
+
+            Path path = Command.getTempFilePath(language);
+
+            String codeLanguage = codeDTO.getCode();
+
+            return Files.write(path, codeLanguage.getBytes());
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -81,21 +65,9 @@ public class CompilerService {
      * @return String[]
      */
     public String[] getCommandByLanguage(CodeDTO codeDTO, String input) {
-        // Obter o comando para execução
-        String[] command = new String[0];
+        Language language = codeDTO.getLanguage();
 
-        if (codeDTO.getLanguage().equals("php")) {
-            command = Command.PHP.injectInputIntoDockerCommand(input);
-        }
-        if (codeDTO.getLanguage().equals("python")) {
-            command = Command.PYTHON.injectInputIntoDockerCommand(input);
-        }
-        if (codeDTO.getLanguage().equals("java")) {
-            command = Command.JAVA.injectInputIntoDockerCommand(input);
-        }
-        if (codeDTO.getLanguage().equals("c")) {
-            command = Command.C.injectInputIntoDockerCommand(input);
-        }
+        String[] command = Command.getCommand(language, input);
 
         //for (String commands : command) {System.out.println(commands);}
 

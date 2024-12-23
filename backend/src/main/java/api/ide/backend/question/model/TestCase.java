@@ -11,9 +11,12 @@ public class TestCase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Lob
+    @Column(name = "input", columnDefinition = "LONGTEXT")
     private String input;
 
     @NotEmpty(message = "Expected output is required")
+    @Column(length = 1000)
     private String expectedOutput;
 
     @ManyToOne

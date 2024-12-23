@@ -8,6 +8,8 @@ import api.ide.backend.question.model.Question;
 import api.ide.backend.question.model.TestCase;
 import api.ide.backend.question.service.QuestionService;
 import api.ide.backend.question.service.TestCaseService;
+import api.ide.backend.submit_history.SubmitHistoryHandler;
+import api.ide.backend.user.UserHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,17 +24,26 @@ public class CorrectionHandler {
     private CompilerService compilerService;
     @Autowired
     private TestCaseService testCaseService;
+    @Autowired
+    private SubmitHistoryHandler submitHistoryHandler;
+    @Autowired
+    private UserHandler userHandler;
 
     public CorrectionDTO run(CodeDTO codeDTO) {
-        return this.correctWithTests(codeDTO, 1);
+        return this.correctWithTests(codeDTO, false);
     }
 
     public CorrectionDTO submit(CodeDTO codeDTO) {
-        return this.correctWithTests(codeDTO, 10);
+        CorrectionDTO correctionDTO = this.correctWithTests(codeDTO, true);
+
+        submitHistoryHandler.save(codeDTO, correctionDTO);
+
+        userHandler.addPoints(correctionDTO);
+
+        return correctionDTO;
     }
 
-    public CorrectionDTO correctWithTests(CodeDTO codeDTO, int howManyTests) {
-        // Usar chat gpt aqui tambem?
+    public CorrectionDTO correctWithTests(CodeDTO codeDTO, boolean maxTestCases) {
         boolean isSafetyCode = CodeSafetyChecker.isCodeSafe(codeDTO);
 
         if (!isSafetyCode) {
@@ -54,7 +65,7 @@ public class CorrectionHandler {
 
         /** @TestCase */
         List<TestCase> testCases = testCaseService.getTestCasesByQuestion(
-                question, howManyTests
+                question, maxTestCases
         );
 
         /** @TestResult */
@@ -76,16 +87,13 @@ public class CorrectionHandler {
         for (TestCase testCase : testCases) {
             boolean passed = false;
 
+            /* Compiler */
             ProcessOutputDTO processOutputDTO = compilerService
                     .compile(codeDTO, testCase.getInput());
 
             /** Error */
             if (processOutputDTO.getExitCode() != 0) {
-                TestResult result = new TestResult(
-                        testCase,
-                        processOutputDTO.getOutput(),
-                        false
-                );
+                TestResult result = new TestResult(testCase, processOutputDTO.getOutput(), false);
                 testResults.add(result);
             }
 
