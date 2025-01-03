@@ -1,6 +1,6 @@
 .main-container {
   width: 900px;
-  background-color: #262626;
+  background-color: rgb(32, 36, 44);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
@@ -92,7 +92,7 @@
 }
 
 #webcrumbs {
-  background-color: #262626;
+  background-color: rgb(32, 36, 44);
 }
 
 /* theme_styles.css */
@@ -106,7 +106,7 @@
 
 /* Tema escuro */
 .dark-theme {
-  --background-color: #1e1e1e;
+  --background-color: rgb(24, 20, 28);
   --text-color: #ffffff;
   --nav-background: #333333;
   --color: #ffffff;

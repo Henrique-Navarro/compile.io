@@ -9,12 +9,14 @@ const getLevelStyle = (level) => {
 const QuestionItem = ({ question }) => {
   const styles = {
     questionBox: {
-      backgroundColor: "#1a202c",
+      backgroundColor: "rgb(32,36,44)",
       borderRadius: "0.75rem",
-      padding: "1.5rem",
-      marginBottom: "1.5rem",
+      padding: "0.5rem 1.5rem",
+      marginBottom: "1rem",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
       transition: "transform 0.3s ease",
+      position: "relative",
+      cursor: "pointer",
     },
     questionHeader: {
       display: "flex",
@@ -23,6 +25,7 @@ const QuestionItem = ({ question }) => {
     },
     questionInfo: {
       fontSize: "14px",
+      width: "70%",
     },
     questionTitle: {
       fontSize: "1.5rem",
@@ -51,16 +54,23 @@ const QuestionItem = ({ question }) => {
       color: "#cbd5e0",
       fontSize: "14px",
       marginTop: "0.75rem",
+      display: "-webkit-box",
+      WebkitBoxOrient: "vertical",
+      overflow: "hidden",
+      WebkitLineClamp: 2,
+      whiteSpace: "normal",
     },
     actions: {
-      display: "flex",
-      justifyContent: "flex-end",
+      position: "absolute",
+      bottom: "1.5rem",
+      right: "1.5rem",
     },
     solveButton: {
       padding: "0.75rem 1.5rem",
       backgroundColor: "#38a169",
       color: "#f7fafc",
-      fontWeight: "600",
+      color: "black",
+      fontWeight: "200",
       borderRadius: "0.5rem",
       border: "none",
       cursor: "pointer",

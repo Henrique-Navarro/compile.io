@@ -24,10 +24,10 @@ const Navbar = ({ onLogout, isAuthenticated }) => {
 
   const styles = {
     navbar: {
-      padding: "0.5rem",
+      padding: "0.8rem",
       display: "flex",
       alignItems: "center",
-      backgroundColor: "#1f2937",
+      backgroundColor: "rgba(14, 20, 30, 255)",
       color: "white",
     },
     text: {

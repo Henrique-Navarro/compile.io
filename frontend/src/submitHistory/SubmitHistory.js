@@ -1,35 +1,33 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import useFetchSubmitHistory from "../hooks/useFetchSubmitHistory.js";
-import CodeMirror from "@uiw/react-codemirror";
-import { EditorView } from "@codemirror/view";
-import { oneDark } from "@codemirror/theme-one-dark";
-import { javascript } from "@codemirror/lang-javascript";
-import { php } from "@codemirror/lang-php";
-import { python } from "@codemirror/lang-python";
-import { java } from "@codemirror/lang-java";
-import TestResult from "../layout/components/TestResult.js";
-import TestsContainer from "../code/TestsContainer.js";
 import CodeEditor from "../code/CodeEditor.js";
-import useFetchQuestion from "../hooks/useFetchQuestion.js";
+import TestsContainer from "../code/TestsContainer.js";
+import { FaChevronDown } from "react-icons/fa";
+import { Container } from "react-bootstrap";
 
-const SubmitHistoryPage = () => {
+const SubmitHistory = () => {
   const { userId } = useParams();
   const { history, loading } = useFetchSubmitHistory(userId);
-  const [openSubmissions, setOpenSubmissions] = useState([]);
-  const { fetchQuestion } = useFetchQuestion();
+  const [visibleSubmissions, setVisibleSubmissions] = useState([]);
+  const [filters, setFilters] = useState({
+    language: "",
+    status: "",
+    date: "",
+  });
 
-  if (loading) return;
+  if (loading) return <div>Loading...</div>;
 
-  const handleSubmissionClick = (submission) => {
-    if (openSubmissions.some((sub) => sub.id === submission.id)) {
-      setOpenSubmissions(
-        openSubmissions.filter((sub) => sub.id !== submission.id)
+  const toggleVisibility = (submissionId) => {
+    if (visibleSubmissions.includes(submissionId)) {
+      setVisibleSubmissions(
+        visibleSubmissions.filter((id) => id !== submissionId)
       );
     } else {
-      setOpenSubmissions([...openSubmissions, submission]);
+      setVisibleSubmissions([...visibleSubmissions, submissionId]);
     }
   };
+
   const getLanguageColor = (language) => {
     switch (language) {
       case "java":
@@ -45,78 +43,250 @@ const SubmitHistoryPage = () => {
     }
   };
 
+  const formatDate = (dateString) => {
+    const [datePart, timePart] = dateString.split(" ");
+    const [day, month, year] = datePart.split(":");
+
+    const formattedDateString = `${year}-${month}-${day}T${timePart}`;
+
+    const date = new Date(formattedDateString);
+
+    if (isNaN(date)) {
+      return "Invalid date";
+    }
+
+    const options = {
+      weekday: "short",
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    };
+
+    return date.toLocaleDateString("pt-BR", options);
+  };
+
+  // Filtrando as submissões com base nos filtros selecionados
+  const filteredHistory = history.filter((submission) => {
+    const languageMatch = filters.language
+      ? submission.language === filters.language
+      : true;
+    const statusMatch = filters.status
+      ? filters.status === "passed"
+        ? !submission.hasErrors
+        : submission.hasErrors
+      : true;
+    const dateMatch = filters.date
+      ? submission.createdAt.includes(filters.date)
+      : true;
+
+    return languageMatch && statusMatch && dateMatch;
+  });
+
+  const styles = {
+    box: {
+      backgroundColor: "rgb(32,36,44)",
+      borderRadius: "0.75rem",
+      padding: "1rem",
+      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+      color: "#e2e8f0",
+      marginBottom: "2rem",
+      maxWidth: "1500px",
+    },
+    header: {
+      display: "flex",
+      justifyContent: "space-between",
+      alignItems: "center",
+      cursor: "pointer",
+      paddingBottom: "0.5rem",
+      borderBottom: "1px solid #444",
+    },
+    center: {
+      textAlign: "center",
+    },
+    title: {
+      fontSize: "1.5rem",
+      fontWeight: "bold",
+    },
+    toggleIcon: {
+      fontSize: "1.5rem",
+      transition: "transform 0.3s ease",
+    },
+    content: {
+      marginTop: "1rem",
+      overflow: "hidden",
+      transition: "height 0.3s ease",
+    },
+    expandedContent: {
+      border: "1px solid #444",
+      borderRadius: "0.5rem",
+      padding: "1rem",
+      backgroundColor: "#2a2a3b",
+    },
+    container: {
+      maxWidth: "1060px",
+      margin: "0 auto",
+      padding: "1.5rem",
+      color: "#f7fafc",
+    },
+    infoSection: {
+      marginTop: "0.5rem",
+      color: "#cbd5e0",
+      fontSize: "0.9rem",
+    },
+    status: {
+      margin: "0.5rem 0",
+      fontSize: "1rem",
+      fontWeight: "bold",
+    },
+    passed: {
+      color: "#20d761",
+    },
+    failed: {
+      color: "#ff516b",
+    },
+    tests: {
+      margin: "0.5rem 0",
+      fontSize: "0.9rem",
+    },
+    date: {
+      marginTop: "0.5rem",
+      color: "#888",
+      fontSize: "0.85rem",
+    },
+    filterSection: {
+      display: "flex",
+      justifyContent: "center",
+      gap: "3rem",
+      backgroundColor: "#2a2a3b",
+      padding: "1rem",
+      borderRadius: "5px",
+    },
+    filterSelect: {
+      padding: "0.5rem",
+      borderRadius: "5px",
+      backgroundColor: "#1f202a",
+      color: "#e2e8f0",
+      border: "1px solid #444",
+    },
+  };
+
   return (
-    <div>
-      <h1>Histórico de Submissões</h1>
-      <ul>
-        {history.map((submission) => (
-          <div key={submission.id} style={{ marginBottom: "20px" }}>
+    <>
+      <div style={styles.filterSection}>
+        <select
+          style={styles.filterSelect}
+          value={filters.language}
+          onChange={(e) => setFilters({ ...filters, language: e.target.value })}
+        >
+          <option value="">All Languages</option>
+          <option value="java">Java</option>
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="php">PHP</option>
+        </select>
+        <select
+          style={styles.filterSelect}
+          value={filters.status}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+        >
+          <option value="">All Submissions</option>
+          <option value="passed">Passed</option>
+          <option value="failed">Failed</option>
+        </select>
+        <input
+          style={styles.filterSelect}
+          type="date"
+          value={filters.date}
+          onChange={(e) => setFilters({ ...filters, date: e.target.value })}
+        />
+      </div>
+      <Container style={styles.container}>
+        <h1 style={styles.center}>Histórico de submissões</h1>
+        {filteredHistory.map((submission) => (
+          <div key={submission.id} style={styles.box}>
             <div
-              onClick={() => handleSubmissionClick(submission)}
-              style={{
-                cursor: "pointer",
-                padding: "10px",
-                backgroundColor: "#333333",
-                borderRadius: "5px",
-                border: "1px solid #ddd",
-              }}
+              style={styles.header}
+              onClick={() => toggleVisibility(submission.id)}
             >
-              <div
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  lineHeight: "20px",
-                  alignItems: "center",
-                }}
-              >
+              <div>
                 <div
                   style={{
-                    width: "15px",
-                    height: "15px",
-                    borderRadius: "50%",
-                    backgroundColor: getLanguageColor(submission.language),
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
                   }}
-                ></div>
-                <p style={{ margin: 0 }}>{submission.language}</p>
+                >
+                  <div
+                    style={{
+                      width: "15px",
+                      height: "15px",
+                      borderRadius: "50%",
+                      backgroundColor: getLanguageColor(submission.language),
+                    }}
+                  ></div>
+                  <p
+                    style={{ margin: 0, fontWeight: "bold", color: "#f7fafc" }}
+                  >
+                    {submission.language.toUpperCase()}
+                  </p>
+                </div>
+                <p style={{ margin: "0.5rem 0", color: "#e2e8f0" }}>
+                  {submission.questionTitle}
+                </p>
               </div>
-              <div
+              <p
                 style={{
-                  display: "flex",
-                  gap: "10px",
-                  lineHeight: "20px",
-                  color: !submission.hasErrors ? "#20d761" : "#ff516b",
+                  ...styles.status,
+                  color: submission.hasErrors ? "#ff516b" : "#20d761",
                 }}
               >
-                <p>{!submission.hasErrors ? "✓" : "✕"}</p>
-                <p>
-                  {submission.testsPassed} / {submission.testsFailed}
-                </p>
-                <p>{submission.isSafetyCode ? "" : ""}</p>
-              </div>
-              <div>
-                <p>{submission.questionTitle}</p>
-                <p>{submission.createdAt}</p>
-              </div>
+                {submission.hasErrors ? "✕ Failed" : "✓ Passed"}
+              </p>
+              <p style={styles.tests}>
+                <span
+                  style={submission.hasErrors ? styles.failed : styles.passed}
+                >
+                  {submission.testsPassed}/{submission.testsFailed} tests
+                </span>
+              </p>
+
+              <p style={styles.date}>{formatDate(submission.createdAt)}</p>
+
+              <FaChevronDown
+                style={{
+                  ...styles.toggleIcon,
+                  transform: visibleSubmissions.includes(submission.id)
+                    ? "rotate(180deg)"
+                    : "rotate(0deg)",
+                }}
+              />
             </div>
-            <div style={{ padding: "20px" }}>
-              {openSubmissions.some((sub) => sub.id === submission.id) && (
-                <CodeEditor
-                  code={submission.code}
-                  setCode={() => {}}
-                  language={submission.language}
-                  editable={false}
-                />
-              )}
-              {openSubmissions.some((sub) => sub.id === submission.id) && (
-                <TestsContainer resultData={submission} />
+            <div
+              style={{
+                ...styles.content,
+                height: visibleSubmissions.includes(submission.id)
+                  ? "auto"
+                  : "0",
+              }}
+            >
+              {visibleSubmissions.includes(submission.id) && (
+                <div style={styles.expandedContent}>
+                  <CodeEditor
+                    code={submission.code}
+                    setCode={() => {}}
+                    language={submission.language}
+                    editable={false}
+                    height="250px"
+                  />
+                  <TestsContainer resultData={submission} scroll={true} />
+                </div>
               )}
             </div>
-            <hr />
           </div>
         ))}
-      </ul>
-    </div>
+      </Container>
+    </>
   );
 };
 
-export default SubmitHistoryPage;
+export default SubmitHistory;

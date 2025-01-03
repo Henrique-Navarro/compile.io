@@ -12,7 +12,13 @@ import {
   closeBraces,
 } from "@codemirror/autocomplete";
 
-const CodeEditor = ({ code, setCode, language, editable = true }) => {
+const CodeEditor = ({
+  code,
+  setCode,
+  language,
+  editable = true,
+  height = "400px",
+}) => {
   const handleCodeChange = (value) => {
     setCode(value);
   };
@@ -34,7 +40,7 @@ const CodeEditor = ({ code, setCode, language, editable = true }) => {
     <div>
       <CodeMirror
         value={code}
-        height="400px"
+        height={height}
         extensions={[getLanguageExtension(), EditorView.lineWrapping]}
         onChange={handleCodeChange}
         theme={oneDark}

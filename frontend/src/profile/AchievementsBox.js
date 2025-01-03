@@ -47,10 +47,10 @@ const AchievementsBox = ({ achievements }) => {
 
 const styles = {
   box: {
-    backgroundColor: "#2d3748",
+    backgroundColor: "#2a2e38",
+    // backgroundColor: "rgb(32,36,44)",
     borderRadius: "0.75rem",
     padding: "1rem",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
     color: "#e2e8f0",
     marginBottom: "2rem",
   },

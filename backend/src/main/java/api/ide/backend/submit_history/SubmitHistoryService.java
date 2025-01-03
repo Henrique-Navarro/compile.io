@@ -1,5 +1,6 @@
 package api.ide.backend.submit_history;
 
+import api.ide.backend.question.exception.QuestionNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +17,12 @@ public class SubmitHistoryService {
     }
 
     public SubmitHistory getById(Long id) {
-        return submitHistoryRepository.findById(id).orElse(null);
+        try {
+            return submitHistoryRepository.findById(id)
+                    .orElseThrow(() -> new QuestionNotFoundException(id));
+        } catch (QuestionNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<SubmitHistory> getAllByUserId(Long userId) {

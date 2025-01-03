@@ -9,42 +9,36 @@ import java.util.List;
 @RestController
 @RequestMapping("/kits")
 public class KitController {
-
     @Autowired
-    private KitService kitService;
+    private KitHandler handler;
+
+    @PostMapping("/save")
+    public ResponseEntity<Kit> save(@RequestBody Kit kit) {
+        Kit newKit = handler.save(kit);
+        return ResponseEntity.ok(newKit);
+    }
 
     @GetMapping("/get-all")
-    public ResponseEntity<List<Kit>> getAllKits() {
-        List<Kit> kits = kitService.findAll();
+    public ResponseEntity<List<Kit>> getAll() {
+        List<Kit> kits = handler.getAll();
         return ResponseEntity.ok(kits);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<Kit> getKitById(@PathVariable Long id) {
-        return kitService.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PostMapping("/create")
-    public ResponseEntity<Kit> createKit(@RequestBody KitRequest kitRequest) {
-        Kit savedKit = kitService.createKit(kitRequest);
-        return ResponseEntity.ok(savedKit);
+    public ResponseEntity<Kit> getById(@PathVariable Long id) {
+        Kit kit = handler.getById(id);
+        return ResponseEntity.ok(kit);
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<Kit> updateKit(@PathVariable Long id, @RequestBody KitRequest kitRequest) {
-        try {
-            Kit updatedKit = kitService.updateKit(id, kitRequest);
-            return ResponseEntity.ok(updatedKit);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<Kit> update(@PathVariable Long id, @RequestBody Kit kit) {
+        Kit updatedKit = handler.update(id, kit);
+        return ResponseEntity.ok(updatedKit);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteKit(@PathVariable Long id) {
-        kitService.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        handler.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

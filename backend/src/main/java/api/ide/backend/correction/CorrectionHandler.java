@@ -6,6 +6,7 @@ import api.ide.backend.dto.CodeDTO;
 import api.ide.backend.dto.CorrectionDTO;
 import api.ide.backend.question.model.Question;
 import api.ide.backend.question.model.TestCase;
+import api.ide.backend.question.model.TestTask;
 import api.ide.backend.question.service.QuestionService;
 import api.ide.backend.question.service.TestCaseService;
 import api.ide.backend.submit_history.SubmitHistoryHandler;
@@ -15,6 +16,10 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Service
 public class CorrectionHandler {
@@ -34,13 +39,19 @@ public class CorrectionHandler {
     }
 
     public CorrectionDTO submit(CodeDTO codeDTO) {
-        CorrectionDTO correctionDTO = this.correctWithTests(codeDTO, true);
+        //CompletableFuture<CorrectionDTO> correctionFuture = CompletableFuture.supplyAsync(() -> correctWithTests(codeDTO, true));
 
-        submitHistoryHandler.save(codeDTO, correctionDTO);
+        try {
+            CorrectionDTO correctionDTO = this.correctWithTests(codeDTO, true);
+            submitHistoryHandler.save(codeDTO, correctionDTO);
+            userHandler.linkQuestionToUser(correctionDTO);
 
-        userHandler.addPoints(correctionDTO);
+            return correctionDTO;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
-        return correctionDTO;
     }
 
     public CorrectionDTO correctWithTests(CodeDTO codeDTO, boolean maxTestCases) {
@@ -48,38 +59,64 @@ public class CorrectionHandler {
 
         if (!isSafetyCode) {
             return null;
-            /*try {
-                throw new Exception("Code isn't safe");
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }*/
-            //return createSafetyFeedback();
         }
 
-        /** @Question */
-        Question question = questionService.getById(
-                codeDTO.getQuestionId()
-        );
-
+        Question question = questionService.getById(codeDTO.getQuestionId());
         if (question == null) return null;
 
-        /** @TestCase */
-        List<TestCase> testCases = testCaseService.getTestCasesByQuestion(
-                question, maxTestCases
-        );
+        List<TestCase> testCases = testCaseService.getTestCasesByQuestion(question, maxTestCases);
+        List<TestResult> testResults = new ArrayList<>();
 
-        /** @TestResult */
-        List<TestResult> testResults = getTestResults(
-                codeDTO, testCases
-        );
+        ExecutorService executorService = Executors.newFixedThreadPool(10); // Pool de threads com 10 threads
+        List<Future<TestResult>> futures = new ArrayList<>();
 
-        /** @CorrectionDTO */
+        try {
+            for (TestCase testCase : testCases) {
+                futures.add(executorService.submit(new TestTask(codeDTO, testCase, compilerService)));
+            }
+
+            for (Future<TestResult> future : futures) {
+                testResults.add(future.get());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            executorService.shutdown();
+        }
+
         CorrectionDTO correction = new CorrectionDTO(codeDTO, testResults);
-
         correction.generate();
 
         return correction;
     }
+
+
+
+    /*@Async("taskExecutor")
+    public CompletableFuture<TestResult> runTestAsync(CodeDTO codeDTO, TestCase testCase) {
+        boolean passed = false;
+
+        long startTime = System.currentTimeMillis();
+        System.out.println("Iniciando o teste para o caso: " + testCase.getId() + " na thread: " + Thread.currentThread().getName());
+
+
+        ProcessOutputDTO processOutputDTO = compilerService.compile(codeDTO, testCase.getInput());
+
+        if (processOutputDTO.getExitCode() != 0) {
+            return CompletableFuture.completedFuture(new TestResult(testCase, processOutputDTO.getOutput(), false));
+        }
+
+        String output = processOutputDTO.getOutput().trim();
+        String expected = testCase.getExpectedOutput().trim();
+
+        passed = output.equals(expected);
+
+        long endTime = System.currentTimeMillis();
+        System.out.println("Teste concluído para o caso: " + testCase.getId() + " em " + (endTime - startTime) + " ms");
+
+        return CompletableFuture.completedFuture(new TestResult(testCase, output, passed));
+    }*/
 
     public List<TestResult> getTestResults(CodeDTO codeDTO, List<TestCase> testCases) {
         List<TestResult> testResults = new ArrayList<>();

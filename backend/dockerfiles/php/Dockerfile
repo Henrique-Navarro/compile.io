@@ -4,4 +4,4 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-CMD ["php", "script.php"]
+CMD ["php", "Main.php"]

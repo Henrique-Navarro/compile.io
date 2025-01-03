@@ -37,19 +37,13 @@ public class QuestionHandler {
         Question savedQuestion = service.save(question);
 
         /** @BaseCode */
-        savedQuestion.setBaseCodes(
-                baseCodeService.saveBaseCode(savedQuestion)
-        );
+        savedQuestion.setBaseCodes(baseCodeService.saveBaseCode(savedQuestion));
 
         /** @CorrectCode */
-        savedQuestion.setCorrectCode(
-                correctCodeService.save(savedQuestion.getCorrectCode())
-        );
+        savedQuestion.setCorrectCode(correctCodeService.save(savedQuestion.getCorrectCode()));
 
         /** @TestCase */
-        savedQuestion.setTestCases(
-                testCaseService.saveTestCase(savedQuestion)
-        );
+        savedQuestion.setTestCases(testCaseService.saveTestCase(savedQuestion));
 
         return savedQuestion;
     }
@@ -113,11 +107,8 @@ public class QuestionHandler {
     }
 
     public void delete(Long id) {
-        if (!service.existsById(id)) {
-            return;
-        }
-
-        service.delete(id);
+        Question question = service.getById(id);
+        service.delete(question.getId());
     }
 
     public void deleteAll() {

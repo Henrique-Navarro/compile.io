@@ -3,17 +3,28 @@ import { useParams } from "react-router-dom";
 import useUserProfile from "../hooks/useUserProfile";
 import Achievement from "./Achievement";
 import AchievementsBox from "./AchievementsBox";
+import { FaPen } from "react-icons/fa";
+import Avatar from "react-avatar";
+import Select from "react-select";
+import countryList from "react-select-country-list";
 
 const ProfilePage = () => {
   const { userId } = useParams();
-  const { profile, isLoading, errorMessage } = useUserProfile(userId);
-
+  const { profile, isLoading, errorMessage } = useUserProfile(6);
   const [isHovered, setIsHovered] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [bio, setBio] = useState(profile ? profile.biografy : "");
+  const [location, setLocation] = useState(profile ? profile.location : "");
+  const [phoneNumber, setPhoneNumber] = useState(
+    profile ? profile.phoneNumber : ""
+  );
+  const [country, setCountry] = useState(null);
+  const countryOptions = countryList().getData();
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
+  console.log("profile", profile);
   if (errorMessage) {
     return <div>{errorMessage}</div>;
   }
@@ -21,6 +32,19 @@ const ProfilePage = () => {
   if (!profile) {
     return <div>Usuário não encontrado.</div>;
   }
+
+  const handleSave = () => {
+    setIsEditing(false);
+    console.log("Dados salvos:", { bio, location, phoneNumber, country });
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setBio(profile.biografy);
+    setLocation(profile.location);
+    setPhoneNumber(profile.phoneNumber);
+    setCountry(null);
+  };
 
   const calculateTierProgress = (points) => {
     let nextTierPoints = 0;
@@ -41,42 +65,78 @@ const ProfilePage = () => {
     }
 
     progress = Math.min(progress, 100);
-
     return { progress, nextTierPoints };
   };
 
   let { progress, nextTierPoints } = calculateTierProgress(30);
   progress = 30;
+
   const styles = {
+    avatarContainer: {
+      position: "relative",
+      display: "inline-block",
+    },
+    avatarEditIcon: {
+      position: "absolute",
+      bottom: "5px",
+      left: "90px",
+      color: "#fff",
+      cursor: "pointer",
+      fontSize: "18px",
+    },
     container: {
-      maxWidth: "960px",
+      display: "flex",
+      flexDirection: "row",
+      maxWidth: "1500px",
       margin: "0 auto",
       padding: "1.5rem",
-      color: "#f7fafc", // Cor clara para texto sobre fundo escuro
-      backgroundColor: "#2d3748", // Fundo escuro para a div principal
+      color: "#f7fafc",
       fontFamily: "'Open Sans', 'Roboto', sans-serif",
     },
-    userInfoBox: {
-      backgroundColor: "#1a202c", // Fundo escuro para o bloco de informações
-      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
-      borderRadius: "0.75rem",
+    leftColumn: {
+      width: "30%",
+      marginRight: "2rem",
+      backgroundColor: "rgb(32,36,44)",
       padding: "1.5rem",
-      marginBottom: "1.5rem",
+      borderRadius: "0.75rem",
     },
-    userInfoHeader: {
-      fontSize: "1.25rem",
-      fontWeight: "600",
-      color: "#e2e8f0", // Texto mais claro para destacar o título
-      marginBottom: "0.5rem",
+    rightColumn: {
+      width: "70%",
+      backgroundColor: "rgb(32,36,44)",
+      padding: "1.5rem",
+      borderRadius: "0.75rem",
     },
-    userInfoText: {
-      marginTop: "0.75rem",
+    bioInput: {
+      width: "90%",
+      padding: "1rem",
+      backgroundColor: "#2d3748",
+      border: "1px solid #4a5568",
+      borderRadius: "0.75rem",
+      color: "#f7fafc",
       fontSize: "14px",
-      color: "#cbd5e0", // Texto em tom mais suave para boa leitura
+      resize: "none",
+    },
+    buttonContainer: {
+      marginTop: "1rem",
+      display: "flex",
+      gap: "1rem",
+    },
+    button: {
+      padding: "0.5rem 1rem",
+      borderRadius: "0.75rem",
+      cursor: "pointer",
+    },
+    saveButton: {
+      backgroundColor: "#38a169",
+      color: "#fff",
+    },
+    cancelButton: {
+      backgroundColor: "#e53e3e",
+      color: "#fff",
     },
     progressContainer: {
       height: "35px",
-      backgroundColor: "#4a5568", // Cor escura para a barra de progresso
+      backgroundColor: "#4a5568",
       width: "100%",
       borderRadius: "50px",
       position: "relative",
@@ -84,9 +144,10 @@ const ProfilePage = () => {
       marginTop: "1rem",
     },
     progressBar: {
-      width: `${progress}%`,
+      //width: ${progress}%,
+      width: "30%",
       height: "35px",
-      backgroundColor: "#38a169", // Cor verde para progresso
+      backgroundColor: "#38a169",
       borderRadius: "50px",
       transition: "width 0.5s ease-in-out",
     },
@@ -95,7 +156,7 @@ const ProfilePage = () => {
       top: "50%",
       left: "50%",
       transform: "translate(-50%, -50%)",
-      color: "#f7fafc", // Cor clara para o texto dentro da barra
+      color: "#f7fafc",
       fontWeight: "bold",
       fontSize: "16px",
     },
@@ -112,81 +173,147 @@ const ProfilePage = () => {
       display: isHovered ? "block" : "none",
       whiteSpace: "nowrap",
     },
-    achievementList: {
-      marginTop: "0.5rem",
-      fontSize: "14px",
-      color: "#cbd5e0",
-      justifyContent: "space-between",
+    countryFlag: {
+      width: "24px",
+      height: "16px",
+      marginLeft: "10px",
+      cursor: "pointer",
+    },
+    nameWithFlag: {
+      display: "flex",
+      alignItems: "center",
+    },
+    countrySelect: {
+      control: (base) => ({
+        ...base,
+        color: "black", // Cor do texto no controle
+      }),
+      option: (base) => ({
+        ...base,
+        color: "black", // Cor do texto das opções
+      }),
     },
   };
 
-  const simulatedAchievements = [
-    {
-      title: "First Steps",
-      description: "Complete your first programming challenge.",
-    },
-    {
-      title: "Java Master",
-      description: "Solve 10 challenges using Java.",
-    },
-    {
-      title: "Bug Hunter",
-      description: "Find and fix 5 bugs in your code.",
-    },
-    {
-      title: "Code Guru",
-      description: "Achieve a perfect score on a challenge.",
-    },
-    {
-      title: "Night Owl",
-      description: "Submit a solution past midnight.",
-    },
-  ];
-
   return (
     <div style={styles.container}>
-      <h1 className="text-3xl font-bold mb-4 text-center">
-        Perfil de {profile.name}
-      </h1>
-      <div style={styles.userInfoBox}>
-        <h2 style={styles.userInfoHeader}>Informações do Usuário</h2>
-        <div style={styles.userInfoText}>
+      <div style={styles.leftColumn}>
+        <div style={styles.avatarContainer}>
+          <Avatar name={profile.name} size="100" round={true} color="#38a169" />
+          <FaPen
+            style={styles.avatarEditIcon}
+            onClick={() => setIsEditing(!isEditing)}
+          />
+        </div>
+        <div style={styles.nameWithFlag}>
+          <h2>{profile.name}</h2>
+          {profile.location && (
+            <img
+              src={`https://flagcdn.com/w40/${profile.location.toLowerCase()}.png`}
+              alt={`${profile.location}`}
+              style={styles.countryFlag}
+              title={profile.location}
+            />
+          )}
+        </div>
+        {isEditing ? (
+          <div>
+            <textarea
+              value={profile.biography}
+              onChange={(e) => setBio(e.target.value)}
+              style={styles.bioInput}
+              placeholder="Edit your biography..."
+            />
+            <input
+              type="text"
+              value={profile.location}
+              onChange={(e) => setLocation(e.target.value)}
+              style={styles.bioInput}
+              placeholder="Edit your location..."
+            />
+            <input
+              type="text"
+              value={profile.phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              style={styles.bioInput}
+              placeholder="Edit your phone number..."
+            />
+            <Select
+              options={countryOptions}
+              value={country}
+              onChange={setCountry}
+              placeholder="Select your country"
+              styles={styles.countrySelect}
+            />
+            <div style={styles.buttonContainer}>
+              <button
+                onClick={handleSave}
+                style={{ ...styles.button, ...styles.saveButton }}
+              >
+                Save
+              </button>
+              <button
+                onClick={handleCancel}
+                style={{ ...styles.button, ...styles.cancelButton }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <pre>{profile.biography || "Not provided"}</pre>
+            <p>
+              <strong>Phone Number: </strong>
+              {profile.phoneNumber || "Not provided"}
+            </p>
+          </div>
+        )}
+      </div>
+      <div style={styles.rightColumn}>
+        <h1 className="text-3xl font-bold mb-4 text-center">
+          Perfil de {profile.name}
+        </h1>
+        <div style={styles.userInfoBox}>
+          <h2 style={styles.userInfoHeader}>Progresso do Usuário</h2>
+          <div style={styles.userInfoText}>
+            <p>
+              <strong>Nome:</strong> {profile.name}
+            </p>
+            <p>
+              <strong>Pontos:</strong> 30
+            </p>
+            <p>
+              <AchievementsBox achievements={profile.achievements} />
+            </p>
+            <p>
+              <strong>Tier:</strong> {profile.tier}
+            </p>
+          </div>
           <p>
-            <strong>Nome:</strong> {profile.name}
-          </p>
-          <p>
-            <strong>Pontos:</strong> 30
-          </p>
-          <p>
-            <AchievementsBox achievements={simulatedAchievements} />
-          </p>
-          <p>
-            <strong>Tier:</strong> {profile.tier}
+            Você está {progress.toFixed(2)}% do próximo tier ({profile.tier}{" "}
+            para o próximo tier de {nextTierPoints} pontos)
           </p>
         </div>
-        <p>
-          Você está {progress.toFixed(2)}% do próximo tier ({profile.tier} para
-          o próximo tier de {nextTierPoints} pontos)
-        </p>
-      </div>
 
-      <div
-        style={styles.progressContainer}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
         <div
-          className="progress-bar"
-          role="progressbar"
-          style={styles.progressBar}
-          aria-valuenow={progress}
-          aria-valuemin="0"
-          aria-valuemax="100"
-        ></div>
-        <div style={styles.progressText}>{progress.toFixed(2)}%</div>
-        <div style={styles.tooltip}>
-          Você já alcançou {progress.toFixed(2)}% do tier {profile.tier},
-          consiga mais {nextTierPoints - 30} para avançar.
+          style={styles.progressContainer}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div
+            className="progress-bar"
+            role="progressbar"
+            style={styles.progressBar}
+            aria-valuenow={progress}
+            aria-valuemin="0"
+            aria-valuemax="100"
+          ></div>
+          <div style={styles.progressText}>{progress.toFixed(2)}%</div>
+          <div style={styles.tooltip}>
+            Você já alcançou {progress.toFixed(2)}% do tier {profile.tier},
+            consiga mais {nextTierPoints - 30} para avançar.
+          </div>
         </div>
       </div>
     </div>

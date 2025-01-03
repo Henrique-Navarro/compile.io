@@ -1,55 +1,54 @@
 package api.ide.backend.kit;
 
+import api.ide.backend.kit.exception.KitNotFoundException;
 import api.ide.backend.question.repository.QuestionRepository;
 import api.ide.backend.question.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class KitService {
 
     @Autowired
-    private KitRepository kitRepository;
+    private KitRepository repository;
     @Autowired
     private QuestionService questionService;
     @Autowired
     private QuestionRepository questionRepository;
 
-    public List<Kit> findAll() {
-        return kitRepository.findAll();
+    public List<Kit> getAll() {
+        return repository.findAll();
     }
 
-    public Optional<Kit> findById(Long id) {
-        return kitRepository.findById(id);
+    public Kit getById(Long id) {
+        try {
+            return repository.findById(id)
+                    .orElseThrow(() -> new KitNotFoundException(id));
+        } catch (KitNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public Kit createKit(KitRequest kitRequest) {
-        Kit kit = new Kit();
-        kit.setName(kitRequest.getName());
-        kit.setLevel(kitRequest.getLevel());
-        kit.setCategory(kitRequest.getCategory());
-        kit.setQuestions(kitRequest.getQuestionIds());
-        kit.setDuration(kitRequest.getDuration());
-        return kitRepository.save(kit);
+    public Kit save(Kit kit) {
+        return repository.save(kit);
     }
 
-    public Kit updateKit(Long id, KitRequest kitRequest) {
-        return kitRepository.findById(id)
-                .map(existingKit -> {
-                    existingKit.setName(kitRequest.getName());
-                    existingKit.setLevel(kitRequest.getLevel());
-                    existingKit.setCategory(kitRequest.getCategory());
-                    existingKit.setQuestions(kitRequest.getQuestionIds());
-                    existingKit.setDuration(kitRequest.getDuration());
-                    return kitRepository.save(existingKit);
-                })
-                .orElseThrow(() -> new RuntimeException("Kit not found with id: " + id));
+    public Kit update(Long id, Kit kit) {
+        Kit existingKit = getById(id);
+
+        existingKit.setName(kit.getName());
+        existingKit.setLevel(kit.getLevel());
+        existingKit.setCategory(kit.getCategory());
+        existingKit.setQuestions(kit.getQuestions());
+        existingKit.setDuration(kit.getDuration());
+
+        return repository.save(existingKit);
     }
 
-    public void deleteById(Long id) {
-        kitRepository.deleteById(id);
+    public void delete(Long id) {
+        Kit kit = getById(id);
+        repository.delete(kit);
     }
 }

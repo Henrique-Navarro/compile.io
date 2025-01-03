@@ -1,3 +1,7 @@
 root {
-  background-color: #262626;
+  background-color: rgb(32, 36, 44);
+}
+body {
+  margin: 0px;
+  padding: 0px;
 }

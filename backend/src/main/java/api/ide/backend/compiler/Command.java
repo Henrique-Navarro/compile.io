@@ -22,7 +22,9 @@ public class Command {
         String image = language.getDockerImage();
         String compile = language.getCompileCommand();
         String file = language.getMainFile();
-
+        // adicionar timeout
+        // timeout 3s docker run --rm user_code_container
+        // ou utilizar alguma funçaõ de ProcessBuilder
         return new String[]{
                 "docker",                       // Executes the Docker command.
                 "run",                          // Runs a new container.

@@ -1,8 +1,9 @@
 <?php
 function somar(int $a, int $b): int
 {
-  $result = $a+$b;
+  $result = 0;
   // Escreva seu código aqui
+
   return $result;
 }
 

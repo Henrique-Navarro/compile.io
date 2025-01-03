@@ -5,6 +5,7 @@ const Achievement = ({ achievement }) => {
   const styles = {
     container: {
       backgroundColor: "#4A5568",
+      // backgroundColor: "#3e4550",
       borderRadius: "0.5rem",
       padding: "0.5rem",
       boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
@@ -47,15 +48,28 @@ const Achievement = ({ achievement }) => {
       color: "#cbd5e0",
     },
   };
-
-  const icons = {
-    "First Steps": <FaTrophy style={styles.icon} />,
-    "Java Master": <FaCode style={styles.icon} />,
-    "Bug Hunter": <FaBug style={styles.icon} />,
-    "Code Guru": <FaStar style={styles.icon} />,
-    "Night Owl": <FaMoon style={styles.icon} />,
+  const description = {
+    FIVE_MATH_QUESTIONS: "Solve 5 math questions",
+    TEN_MATH_QUESTIONS: "Solve 10 math questions",
+    FIRST_CODE_SUBMISSION: "Submit your first code",
+    PERFECT_SCORE: "Achieve a perfect score on a question",
+    Night_Owl: <FaMoon style={styles.icon} />,
   };
-
+  const title = {
+    FIVE_MATH_QUESTIONS: "Five math questions",
+    TEN_MATH_QUESTIONS: "Ten math questions",
+    FIRST_CODE_SUBMISSION: "First code submission",
+    PERFECT_SCORE: "Perfect score",
+    Night_Owl: <FaMoon style={styles.icon} />,
+  };
+  const icons = {
+    FIVE_MATH_QUESTIONS: <FaTrophy style={styles.icon} />,
+    TEN_MATH_QUESTIONS: <FaCode style={styles.icon} />,
+    FIRST_CODE_SUBMISSION: <FaBug style={styles.icon} />,
+    PERFECT_SCORE: <FaStar style={styles.icon} />,
+    Night_Owl: <FaMoon style={styles.icon} />,
+  };
+  console.log(achievement);
   return (
     <div
       style={styles.container}
@@ -65,11 +79,11 @@ const Achievement = ({ achievement }) => {
       onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
     >
       <div style={styles.iconContainer}>
-        {icons[achievement.title] || <FaTrophy style={styles.icon} />}
+        {icons[achievement] || <FaTrophy style={styles.icon} />}
       </div>
       <div>
-        <h3 style={styles.title}>{achievement.title}</h3>
-        <p style={styles.description}>{achievement.description}</p>
+        <h3 style={styles.title}>{title[achievement]}</h3>
+        <p style={styles.description}>{description[achievement]}</p>
       </div>
     </div>
   );

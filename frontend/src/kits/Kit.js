@@ -54,6 +54,12 @@ const Kit = () => {
 
   const Icon = categoryIcons[kit.category] || FaCubes;
 
+  const totalQuestions = kit.questions.length;
+  const completedQuestions = kit.questions.filter((q) => q.completed).length;
+  const progressPercentage = Math.round(
+    (completedQuestions / totalQuestions) * 100
+  );
+
   const styles = {
     mainContainer: {
       maxWidth: "800px",
@@ -61,7 +67,6 @@ const Kit = () => {
       padding: "1.5rem",
       backgroundColor: "#2d3748",
       color: "#f7fafc",
-      fontFamily: "'Open Sans', 'Roboto', sans-serif",
       borderRadius: "0.75rem",
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.2)",
     },
@@ -81,35 +86,42 @@ const Kit = () => {
       marginBottom: "0.5rem",
       color: "#e2e8f0",
     },
-    kitInfo: {
-      fontSize: "14px",
-      color: "#cbd5e0",
-    },
-    levelIndicator: (level) => ({
-      width: "10px",
-      height: "10px",
-      borderRadius: "50%",
-      backgroundColor: getLevelColor(level),
-      marginRight: "0.5rem",
-    }),
-    categoryAndLevel: {
-      display: "flex",
-      alignItems: "center",
+    progressContainer: {
+      position: "relative",
+      height: "20px",
+      backgroundColor: "#4a5568",
+      borderRadius: "10px",
+      overflow: "hidden",
       marginBottom: "1rem",
     },
-    questionList: {
-      listStyleType: "none",
-      paddingLeft: "0",
-      marginTop: "1rem",
+    progressBar: {
+      height: "100%",
+      width: `${progressPercentage}%`,
+      backgroundColor: "#63b3ed",
+      transition: "width 0.3s",
     },
-    questionItem: {
+    progressText: {
+      position: "absolute",
+      width: "100%",
+      textAlign: "center",
+      top: "50%",
+      transform: "translateY(-50%)",
+      color: "#e2e8f0",
+      fontSize: "14px",
+      fontWeight: "bold",
+    },
+    questionListContainer: {
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      gap: "1rem",
+    },
+    questionCard: {
       backgroundColor: "#4a5568",
       padding: "1rem",
       borderRadius: "0.5rem",
-      marginBottom: "0.5rem",
       transition: "background-color 0.3s",
     },
-    questionItemHover: {
+    questionCardHover: {
       backgroundColor: "#2b6cb0",
     },
     questionLink: {
@@ -129,65 +141,34 @@ const Kit = () => {
           <LevelIndicator level={kit.level} category={kit.category} />
         </div>
       </div>
-      <ul style={styles.questionList}>
-        <strong>Questions:</strong>
-        {Array.isArray(kit.questions) ? (
-          kit.questions.map((questionId) => (
-            <QuestionItem key={questionId} questionId={questionId} />
-          ))
-        ) : (
-          <li>No questions available</li>
-        )}
-      </ul>
+      <div style={styles.progressContainer}>
+        <div style={styles.progressBar}></div>
+        <span style={styles.progressText}>{progressPercentage}% completed</span>
+      </div>
+      <div style={styles.questionListContainer}>
+        {kit.questions.map((question) => (
+          <div
+            key={question.id}
+            style={styles.questionCard}
+            onMouseOver={(e) =>
+              (e.currentTarget.style.backgroundColor =
+                styles.questionCardHover.backgroundColor)
+            }
+            onMouseOut={(e) =>
+              (e.currentTarget.style.backgroundColor =
+                styles.questionCard.backgroundColor)
+            }
+          >
+            <Link
+              to={`/questions/get/${question.id}`}
+              style={styles.questionLink}
+            >
+              {question.title}
+            </Link>
+          </div>
+        ))}
+      </div>
     </div>
-  );
-};
-
-const QuestionItem = ({ questionId }) => {
-  const { question, loading, error } = useFetchQuestion(questionId);
-  const styles = {
-    questionItem: {
-      backgroundColor: "#4a5568",
-      padding: "1rem",
-      borderRadius: "0.5rem",
-      marginBottom: "0.5rem",
-      transition: "background-color 0.3s",
-    },
-    questionItemHover: {
-      backgroundColor: "#2b6cb0",
-    },
-    questionLink: {
-      textDecoration: "none",
-      color: "#e2e8f0",
-      fontWeight: "bold",
-      display: "block",
-    },
-  };
-
-  if (loading) {
-    return <li style={styles.questionItem}>Loading...</li>;
-  }
-
-  if (error || !question) {
-    return null;
-  }
-
-  return (
-    <li
-      style={styles.questionItem}
-      onMouseOver={(e) =>
-        (e.currentTarget.style.backgroundColor =
-          styles.questionItemHover.backgroundColor)
-      }
-      onMouseOut={(e) =>
-        (e.currentTarget.style.backgroundColor =
-          styles.questionItem.backgroundColor)
-      }
-    >
-      <Link to={`/questions/get/${questionId}`} style={styles.questionLink}>
-        {question.title}
-      </Link>
-    </li>
   );
 };
 

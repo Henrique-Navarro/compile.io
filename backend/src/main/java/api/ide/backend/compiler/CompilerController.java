@@ -15,9 +15,7 @@ public class CompilerController {
 
     @PostMapping("/compile")
 
-    public ResponseEntity<ProcessOutputDTO> compile(
-            @RequestBody CodeDTO codeDTO
-    ) {
+    public ResponseEntity<ProcessOutputDTO> compile(@RequestBody CodeDTO codeDTO) {
         ProcessOutputDTO output = compiler.run(codeDTO);
         return ResponseEntity.ok(output);
     }

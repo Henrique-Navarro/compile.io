@@ -16,5 +16,40 @@ services:
     ports:
       - 8000:80
 
+  nodejs:
+    build:
+      context: ./dockerfiles/js
+      dockerfile: Dockerfile
+    image: image_js
+    container_name: container_js
+
+  php:
+    build:
+      context: ./dockerfiles/php
+      dockerfile: Dockerfile
+    image: image_php
+    container_name: container_php
+
+  java:
+    build:
+      context: ./dockerfiles/java
+      dockerfile: Dockerfile
+    image: image_java
+    container_name: container_java
+
+  python:
+    build:
+      context: ./dockerfiles/python
+      dockerfile: Dockerfile
+    image: image_python
+    container_name: container_python
+
+  cpp:
+    build:
+      context: ./dockerfiles/cpp
+      dockerfile: Dockerfile
+    image: image_cpp
+    container_name: container_cpp
+
 volumes:
   ide_data:

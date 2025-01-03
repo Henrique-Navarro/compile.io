@@ -67,7 +67,7 @@ public class Question {
     @NotNull(message = "Points are required")
     private int points;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<TestCase> testCases = new ArrayList<>();
 
     public Question(Long id, String title, String description, String objective, String task, String explanation, String inputFormat, String inputExample, String outputExample, String outputFormat, List<BaseCode> baseCodes, CorrectCode correctCode, Category category, Level level, int points, List<TestCase> testCases) {

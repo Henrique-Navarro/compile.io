@@ -22,15 +22,18 @@ public class CompilerService {
      */
     public ProcessOutputDTO compile(CodeDTO codeDTO, String input) {
         try {
-            Path file = this.writeCodeOnTempFile(codeDTO);
+            Language language = codeDTO.getLanguage();
+            String code = codeDTO.getCode();
 
-            String[] command = this.getCommandByLanguage(codeDTO, input);
+            Path file = this.writeCodeOnTempFile(code, language);
+
+            String[] command = this.getCommandByLanguage(language, input);
 
             ProcessBuilder processBuilder = new ProcessBuilder(command);
 
             Process process = processBuilder.start();
 
-            return this.readProcessOutput(process);
+            return this.readProcessOutput(process, language);
 
         } catch (Exception e) {
             return new ProcessOutputDTO(-1, e.getMessage());
@@ -40,17 +43,14 @@ public class CompilerService {
     /**
      * Write code on `backend/tempfiles`
      *
-     * @param codeDTO
+     * @param code
+     * @param language
      */
-    public Path writeCodeOnTempFile(CodeDTO codeDTO) {
+    public Path writeCodeOnTempFile(String code, Language language) {
         try {
-            Language language = codeDTO.getLanguage();
-
             Path path = Command.getTempFilePath(language);
 
-            String codeLanguage = codeDTO.getCode();
-
-            return Files.write(path, codeLanguage.getBytes());
+            return Files.write(path, code.getBytes());
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -60,16 +60,14 @@ public class CompilerService {
     /**
      * Return the entire command for specific programming language
      *
-     * @param codeDTO
+     * @param language
      * @param input
      * @return String[]
      */
-    public String[] getCommandByLanguage(CodeDTO codeDTO, String input) {
-        Language language = codeDTO.getLanguage();
-
+    public String[] getCommandByLanguage(Language language, String input) {
         String[] command = Command.getCommand(language, input);
 
-        //for (String commands : command) {System.out.println(commands);}
+        // for (String commands : command) {System.out.println(commands);}
 
         return command;
     }
@@ -81,21 +79,45 @@ public class CompilerService {
      * @return ProcessOutputDTO
      * @throws Exception
      */
-    public ProcessOutputDTO readProcessOutput(Process process) throws Exception {
+    public ProcessOutputDTO readProcessOutput(Process process, Language language) throws Exception {
         StringBuilder output = new StringBuilder();
+        StringBuilder errorOutput = new StringBuilder();
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        // Combine stdout and stderr
+        try (BufferedReader stdOutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+             BufferedReader stdErrReader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+
             String line;
-
-            while ((line = reader.readLine()) != null) {
+            while ((line = stdOutReader.readLine()) != null) {
                 output.append(line).append("\n");
+            }
+
+            while ((line = stdErrReader.readLine()) != null) {
+                errorOutput.append(line).append("\n");
             }
         }
 
         int exitCode = process.waitFor();
 
-        String processOutput = output.toString().replace("usr/src/app", "");
+        String sanitizedOutput = sanitizeOutput(output, errorOutput, language);
 
-        return new ProcessOutputDTO(exitCode, processOutput);
+        return new ProcessOutputDTO(exitCode, sanitizedOutput);
+    }
+
+    /**
+     * @param output
+     * @param errorOutput
+     * @param language
+     * @return
+     */
+    public String sanitizeOutput(StringBuilder output, StringBuilder errorOutput, Language language) {
+        String path = FilePath.getFullPathOfMainFileByLanguage(language);
+
+        String processOutput = output.toString().replace(path, "");
+        String processErrorOutput = errorOutput.toString().replace(path, "");
+
+        boolean hasErrors = !processErrorOutput.isEmpty();
+
+        return hasErrors ? processErrorOutput : processOutput;
     }
 }

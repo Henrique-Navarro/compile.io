@@ -1,5 +1,6 @@
 package api.ide.backend.user;
 
+import api.ide.backend.user.exception.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,22 +11,21 @@ import java.util.List;
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository repository;
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
     public UserService() {
     }
 
-    public User registerUser(User user) {
+    public User save(User user) {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encodedPassword);
-        return userRepository.save(user);
+        return repository.save(user);
     }
 
-    public User updateUser(Long id, User userDetails) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public User update(Long id, User userDetails) {
+        User existingUser = getById(id);
 
         existingUser.setName(userDetails.getName());
         existingUser.setEmail(userDetails.getEmail());
@@ -35,30 +35,49 @@ public class UserService {
             existingUser.setPassword(encodedPassword);
         }
 
-
-        return userRepository.save(existingUser);
+        return repository.save(existingUser);
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public User getById(Long id) {
+        try {
+            return repository.findById(id)
+                    .orElseThrow(() -> new UserNotFoundException(id));
+        } catch (UserNotFoundException ignored) {
+        }
+
+        return null;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public boolean existsByEmail(String email) {
+        return repository.findByEmail(email) != null;
     }
 
-    public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        userRepository.delete(user);
+    public List<User> getAll() {
+        return repository.findAll();
     }
 
-    public void addPoints(Long userId, int points) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public void delete(Long id) {
+        User user = getById(id);
+        repository.delete(user);
+    }
 
-        user.setPoints(user.getPoints() + points);
-        userRepository.save(user);
+    public void linkQuestion(Long userId, Long questionId, int points) {
+        User user = getById(userId);
+
+        if (!user.getQuestionsSolved().contains(questionId)) {
+            /** add points **/
+            user.addPoints(points);
+
+            /** add question solved **/
+            user.addQuestionSolved(questionId);
+
+            /** add achievement **/
+            user.notifyAchievement();
+
+            /** check tier **/
+            user.checkTier();
+
+            repository.save(user);
+        }
     }
 }

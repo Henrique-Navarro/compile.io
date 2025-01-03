@@ -12,35 +12,35 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private UserHandler handler;
 
-    @PostMapping("/create")
-    public ResponseEntity<User> createrUser(@RequestBody @Valid User user) {
-        User newUser = userService.registerUser(user);
+    @PostMapping("/save")
+    public ResponseEntity<User> save(@RequestBody @Valid User user) {
+        User newUser = handler.save(user);
         return ResponseEntity.ok(newUser);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody @Valid User userDetails) {
-        User updatedUser = userService.updateUser(id, userDetails);
-        return ResponseEntity.ok(updatedUser);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        User user = userService.getUserById(id);
-        return ResponseEntity.ok(user);
-    }
-
-    @GetMapping("/getAll")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> users = userService.getAllUsers();
+    @GetMapping("/get-all")
+    public ResponseEntity<List<User>> getAll() {
+        List<User> users = handler.getAll();
         return ResponseEntity.ok(users);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    @GetMapping("/get/{id}")
+    public ResponseEntity<User> getById(@PathVariable Long id) {
+        User user = handler.getById(id);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody @Valid User userDetails) {
+        User updatedUser = handler.update(id, userDetails);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        handler.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

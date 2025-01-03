@@ -1,5 +1,6 @@
 package api.ide.backend.question.service;
 
+import api.ide.backend.question.exception.QuestionNotFoundException;
 import api.ide.backend.question.model.Question;
 import api.ide.backend.question.repository.QuestionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,12 @@ public class QuestionService {
     private QuestionRepository questionRepository;
 
     public Question getById(Long id) {
-        return questionRepository.findById(id).orElse(null);
+        try {
+            return questionRepository.findById(id)
+                    .orElseThrow(() -> new QuestionNotFoundException(id));
+        } catch (QuestionNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<Question> getAll() {

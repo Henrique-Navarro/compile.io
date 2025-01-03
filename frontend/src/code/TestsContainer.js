@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import BlackLabel from "../layout/components/BlackLabel";
 
-const TestsContainer = ({ resultData }) => {
+const TestsContainer = ({ resultData, scroll }) => {
   const [selectedTest, setSelectedTest] = useState(null);
 
   // Efeito para definir o primeiro teste como selecionado
@@ -12,7 +12,6 @@ const TestsContainer = ({ resultData }) => {
   }, [resultData]); // O efeito roda sempre que resultData muda
 
   if (!resultData) return null;
-  // console.log(resultData);
 
   const handleTestClick = (test) => {
     setSelectedTest(test);
@@ -21,6 +20,24 @@ const TestsContainer = ({ resultData }) => {
   const formatOutput = (output) => {
     if (!output.replace("\n", "")) return ["~ no input provided ~"];
     return output.trim().split("\n");
+  };
+
+  const containerStyles = {
+    ...styles.container,
+    height: scroll ? "350px" : "100%", // Define a altura como 50% se o parâmetro scroll for passado
+    overflowY: scroll ? "auto" : "hidden", // Adiciona o scroll vertical se o parâmetro scroll for passado
+  };
+
+  const testListStyles = {
+    ...styles.testList,
+    maxHeight: scroll ? "500px" : "1000px", // Define o máximo de altura para a lista de testes
+    overflowY: "auto", // Adiciona o scroll vertical na lista de testes
+  };
+
+  const detailsContainerStyles = {
+    ...styles.detailsContainer,
+    maxHeight: scroll ? "500px" : "500px", // Define o máximo de altura para o conteúdo do teste
+    overflowY: "auto", // Adiciona o scroll vertical para o conteúdo do teste
   };
 
   return (
@@ -36,9 +53,9 @@ const TestsContainer = ({ resultData }) => {
           : `${resultData.testsPassed}/${resultData.testResults.length} test cases passed :D`}
       </h1>
 
-      <div style={styles.container}>
+      <div style={containerStyles}>
         <div style={styles.testContainer}>
-          <div style={styles.testList}>
+          <div style={testListStyles}>
             <ul style={styles.testItems}>
               {resultData.testResults.map((test, index) => (
                 <li
@@ -59,7 +76,7 @@ const TestsContainer = ({ resultData }) => {
             </ul>
           </div>
 
-          <div style={styles.detailsContainer}>
+          <div style={detailsContainerStyles}>
             {selectedTest ? (
               <>
                 <BlackLabel
@@ -138,7 +155,7 @@ const styles = {
     backgroundColor: "#1f202a",
     padding: "1rem",
     borderRadius: "5px",
-    overflow: "hidden",
+    overflowY: "auto", // Adiciona o scroll vertical
   },
 };
 

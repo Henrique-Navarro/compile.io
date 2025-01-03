@@ -1,5 +1,7 @@
 package api.ide.backend.user;
 
+import api.ide.backend.enums.Achievement;
+import api.ide.backend.enums.Tier;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import org.hibernate.annotations.CreationTimestamp;
@@ -57,7 +59,11 @@ public class User implements UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<Long> questionsSolved;
 
-    public User(Long id, String name, String email, String password, int points, Role role, boolean emailVerified, AccountStatus status, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    private String location;
+    private String phoneNumber;
+    private String biography;
+
+    public User(Long id, String name, String email, String password, int points, Role role, boolean emailVerified, AccountStatus status, LocalDateTime createdAt, LocalDateTime updatedAt, String location, String phoneNumber, String biography) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -69,6 +75,9 @@ public class User implements UserDetails {
         this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.location = location;
+        this.phoneNumber = phoneNumber;
+        this.biography = biography;
     }
 
     public User() {
@@ -144,18 +153,6 @@ public class User implements UserDetails {
         return true;
     }
 
-    public void updateTier() {
-        if (points < 30) {
-            this.tier = Tier.BRONZE;
-        } else if (points < 100) {
-            this.tier = Tier.SILVER;
-        } else if (points < 250) {
-            this.tier = Tier.GOLD;
-        } else {
-            this.tier = Tier.PLATINUM;
-        }
-    }
-
     public void setPassword(String password) {
         this.password = password;
     }
@@ -208,6 +205,30 @@ public class User implements UserDetails {
         this.updatedAt = updatedAt;
     }
 
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getBiography() {
+        return biography;
+    }
+
+    public void setBiography(String biography) {
+        this.biography = biography;
+    }
+
     public Tier getTier() {
         return tier;
     }
@@ -216,16 +237,41 @@ public class User implements UserDetails {
         this.tier = tier;
     }
 
-    public Set<Achievement> getAchievements() {
-        return achievements;
-    }
 
     public void setAchievements(Set<Achievement> achievements) {
         this.achievements = achievements;
     }
 
+    public Set<Achievement> getAchievements() {
+        return achievements;
+    }
+
     public void addAchievement(Achievement achievement) {
-        this.achievements.add(achievement);
+        if (!this.getAchievements().contains(achievement)) {
+            this.achievements.add(achievement);
+        }
+    }
+
+    public void addPoints(int points) {
+        this.setPoints(this.getPoints() + points);
+    }
+
+    public void addQuestionSolved(Long questionId) {
+        this.getQuestionsSolved().add(questionId);
+    }
+
+    public void checkTier() {
+        this.tier = Tier.getTierByPoints(this.getPoints());
+    }
+
+    public void notifyAchievement() {
+        for (Achievement achievement : Achievement.getAll()) {
+            boolean shouldAdd = Achievement.check(this, achievement);
+
+            if (shouldAdd) {
+                this.addAchievement(achievement);
+            }
+        }
     }
 
     public enum Role {
@@ -234,44 +280,6 @@ public class User implements UserDetails {
 
     public enum AccountStatus {
         ACTIVE, INACTIVE, SUSPENDED
-    }
-
-    // CHAMAR ESSE MÉTODO EM SUBMIT
-    public void notifyAchievement() {
-        if (this.questionsSolved.size() >= 5) {
-            if (!this.achievements.contains(Achievement.FIVE_MATH_QUESTIONS)) {
-                this.addAchievement(Achievement.FIVE_MATH_QUESTIONS);
-            }
-        }
-        if (this.questionsSolved.size() >= 10) {
-            if (!this.achievements.contains(Achievement.TEN_MATH_QUESTIONS)) {
-                this.addAchievement(Achievement.TEN_MATH_QUESTIONS);
-            }
-        }
-        if (!this.achievements.contains(Achievement.FIRST_CODE_SUBMISSION)) {
-            this.addAchievement(Achievement.FIRST_CODE_SUBMISSION);
-        }
-    }
-
-    public enum Tier {
-        BRONZE, SILVER, GOLD, PLATINUM
-    }
-
-    public enum Achievement {
-        FIVE_MATH_QUESTIONS("Solve 5 math questions"),
-        TEN_MATH_QUESTIONS("Solve 10 math questions"),
-        FIRST_CODE_SUBMISSION("Submit your first code"),
-        PERFECT_SCORE("Achieve a perfect score on a question");
-
-        private final String description;
-
-        Achievement(String description) {
-            this.description = description;
-        }
-
-        public String getDescription() {
-            return description;
-        }
     }
 }
 

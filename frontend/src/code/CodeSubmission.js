@@ -7,7 +7,8 @@ import Output from "./Output";
 import TestsContainer from "./TestsContainer";
 import Button from "../layout/components/Button";
 import Select from "../layout/components/Select";
-import { FaRedo } from "react-icons/fa"; // Importando o ícone de reset
+import { FaRedo, FaLightbulb, FaRegLightbulb } from "react-icons/fa"; // Importando ícones
+import Confetti from "react-confetti";
 
 const CodeSubmission = ({ question }) => {
   const [code, setCode] = useState("");
@@ -17,22 +18,30 @@ const CodeSubmission = ({ question }) => {
   const [language, setLanguage] = useState("");
   const [isRunLoading, setIsRunLoading] = useState(false);
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false); // Estado para confetes
+  const [showHint, setShowHint] = useState(false); // Estado para mostrar a dica
+  const [hintVisible, setHintVisible] = useState(false); // Estado para controlar a visibilidade com clique
+  const [isLampOn, setIsLampOn] = useState(false); // Estado para controlar o estado da lâmpada
 
   const { questionId } = useParams();
   const userId = 1;
 
-  /** Dados retornados pelo backend (Output e Correction) */
   useEffect(() => {
     if (output) {
       setIsRunLoading(false);
-      setCorrection(null); // Limpa a correção quando um novo output é recebido
+      setCorrection(null);
     }
   }, [output]);
 
   useEffect(() => {
     if (correction) {
       setIsSubmitLoading(false);
-      setOutput(null); // Limpa o output quando uma nova correção é recebida
+      setOutput(null);
+
+      if (!correction.hasErrors) {
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 5000); // Mostra os confetes por 5 segundos
+      }
     }
   }, [correction]);
 
@@ -46,7 +55,6 @@ const CodeSubmission = ({ question }) => {
     }
   }, [question]);
 
-  /** Atualiza o código quando a linguagem é alterada */
   const handleLanguageChange = (e) => {
     const selectedLanguage = e.target.value;
     setLanguage(selectedLanguage);
@@ -56,7 +64,6 @@ const CodeSubmission = ({ question }) => {
     setCode(selectedCodeBase ? selectedCodeBase.code : "");
   };
 
-  /** Função para resetar o código */
   const handleReset = () => {
     const selectedCodeBase = baseCodes.find(
       (baseCode) => baseCode.language === language
@@ -64,7 +71,6 @@ const CodeSubmission = ({ question }) => {
     setCode(selectedCodeBase ? selectedCodeBase.code : "");
   };
 
-  /** Enviar para o backend */
   const handleRun = () => {
     setIsRunLoading(true);
     setOutput(null);
@@ -81,8 +87,26 @@ const CodeSubmission = ({ question }) => {
     submitCode(codeDTO);
   };
 
+  const handleIconClick = () => {
+    setHintVisible(!hintVisible);
+    setIsLampOn(!isLampOn);
+  };
+
+  const handleMouseEnter = () => {
+    setIsLampOn(true);
+    setShowHint(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (!hintVisible) {
+      setIsLampOn(false);
+      setShowHint(false);
+    }
+  };
+
   return (
     <>
+      {showConfetti && <Confetti />} {/* Componente de confetes */}
       <div
         style={{
           display: "flex",
@@ -90,6 +114,66 @@ const CodeSubmission = ({ question }) => {
           alignItems: "center",
         }}
       >
+        <div style={{ position: "relative" }}>
+          {/* Exibe o botão de dica apenas se houver erro na correção */}
+          {correction && correction.hasErrors && (
+            <div
+              style={{
+                position: "fixed",
+                top: "48px",
+                left: "47%",
+                transform: "translateX(-50%)",
+                width: "200px",
+                backgroundColor: "black",
+                borderRadius: "5px",
+                display: showHint || hintVisible ? "block" : "none",
+                padding: "10px",
+                color: "white",
+                fontSize: "14px",
+                textAlign: "center",
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              }}
+            >
+              <strong>Dica:</strong> {question.hint}bla bla bla bla bla blabla
+              bla blabla bla bla
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  width: "0",
+                  height: "0",
+                  borderLeft: "10px solid transparent",
+                  borderRight: "10px solid transparent",
+                  borderTop: "10px solid black",
+                }}
+              ></div>
+            </div>
+          )}
+
+          {/* Ícone de Dica */}
+          {correction && correction.hasErrors && (
+            <div
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              onClick={handleIconClick}
+              style={{
+                cursor: "pointer",
+                marginRight: "15px",
+                position: "relative",
+                zIndex: 1,
+              }}
+            >
+              {isLampOn ? (
+                <FaLightbulb size={20} color="yellow" />
+              ) : (
+                <FaRegLightbulb size={20} color="white" />
+              )}
+            </div>
+          )}
+        </div>
+
         <Select
           language={language}
           handleLanguageChange={handleLanguageChange}
@@ -119,7 +203,6 @@ const CodeSubmission = ({ question }) => {
           value="Run"
           backgroundColor="#3182ce"
         />
-
         <Button
           onClick={handleSubmit}
           isLoading={isSubmitLoading}
