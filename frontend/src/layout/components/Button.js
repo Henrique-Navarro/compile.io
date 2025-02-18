@@ -1,6 +1,7 @@
 import React from "react";
 import { ClipLoader } from "react-spinners";
 
+//TODO alterar nome para LoadingButton
 const Button = ({ onClick, isLoading, value, backgroundColor }) => {
   const style = {
     backgroundColor: backgroundColor,

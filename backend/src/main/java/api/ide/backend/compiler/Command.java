@@ -12,19 +12,16 @@ public class Command {
     }
 
     /**
-     * docker run --rm -v <volumePath> compilador_php(php:7.4-cli) php Main.php
-     * docker run --rm -v <volumePath> openjdk:11 javac Main.java
-     * docker run --rm -v <volumePath> python:3.9 python Main.py
-     * docker run --rm -v <volumePath> gcc gcc main.c -o main
+     * docker run --rm -v <volumePath> container_php php Main.php <input>
+     * docker run --rm -v <volumePath> container_python python Main.py <input>
+     * docker run --rm -v <volumePath> container_javascript node Main.js <input>
      */
     public static String[] buildDockerCommand(Language language, String input) {
         String volumePath = language.getVolumePath();
         String image = language.getDockerImage();
         String compile = language.getCompileCommand();
         String file = language.getMainFile();
-        // adicionar timeout
-        // timeout 3s docker run --rm user_code_container
-        // ou utilizar alguma funçaõ de ProcessBuilder
+
         return new String[]{
                 "docker",                       // Executes the Docker command.
                 "run",                          // Runs a new container.

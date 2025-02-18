@@ -11,6 +11,8 @@ import {
   FaSun,
   FaBoxes,
 } from "react-icons/fa";
+import Span from "./Span";
+import Compile_ioLogo from "./Compile_ioLogo";
 
 const Navbar = ({ onLogout, isAuthenticated }) => {
   const { theme, toggleTheme } = useTheme();
@@ -33,17 +35,14 @@ const Navbar = ({ onLogout, isAuthenticated }) => {
     text: {
       color: "white",
     },
-    title: {
-      fontSize: "1.25rem",
-      fontWeight: "bold",
-      marginRight: "2rem",
-    },
     link: {
       display: "flex",
       alignItems: "center",
       gap: "0.5rem",
       textDecoration: "none",
       color: "#2ccc64",
+      fontFamily: "'Open Sans', 'Roboto', sans-serif",
+      fontWeight: "100",
     },
     linkHover: {
       color: "#4b5563",
@@ -83,10 +82,7 @@ const Navbar = ({ onLogout, isAuthenticated }) => {
 
   return (
     <nav style={styles.navbar}>
-      <h1 style={styles.title}>
-        <span style={styles.span}>C</span>ompile
-        <span style={styles.span}>.</span>io
-      </h1>
+      <Compile_ioLogo />
       <div
         style={{ display: "flex", alignItems: "center", gap: "2rem", flex: 1 }}
       >

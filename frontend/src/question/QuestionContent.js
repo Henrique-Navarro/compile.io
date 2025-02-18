@@ -1,44 +1,18 @@
 import React from "react";
 import BlackLabel from "../layout/components/BlackLabel";
 import LevelIndicator from "../layout/components/LevelIndicator";
+import Title from "../layout/components/Title";
+import Paragraph from "../layout/components/Paragraph";
 
 const QuestionContent = ({ question }) => {
-  const getLevelColor = (level) => {
-    switch (level) {
-      case "easy":
-        return "green";
-      case "medium":
-        return "yellow";
-      case "hard":
-        return "red";
-      default:
-        return "gray";
-    }
-  };
-
   const styles = {
     content: {
       fontFamily: "'Open Sans', 'Roboto', sans-serif",
       fontWeight: "100",
     },
-    paragraph: {
-      fontWeight: "100",
-      fontSize: "13px",
-    },
-    levelIndicator: (level) => ({
-      width: "10px",
-      height: "10px",
-      borderRadius: "50%",
-      backgroundColor: getLevelColor(level),
-      marginRight: "0.5rem",
-    }),
     categoryAndLevel: {
       display: "flex",
       alignItems: "center",
-      marginBottom: "1rem",
-    },
-    title: {
-      fontWeight: "bold",
       marginBottom: "1rem",
     },
     strong: {
@@ -50,27 +24,32 @@ const QuestionContent = ({ question }) => {
     <div style={styles.content}>
       <LevelIndicator level={question.level} category={question.category} />
 
-      <h2 style={styles.title}>{question.title}</h2>
-
-      <strong style={styles.strong}>Objetivo:</strong>
-      <p style={styles.paragraph}>{question.objective}</p>
+      <Title text={question.title} />
 
       <strong style={styles.strong}>Descrição:</strong>
-      <p style={styles.paragraph}>{question.description}</p>
+      <Paragraph text={question.description} />
 
       <strong style={styles.strong}>Tarefa:</strong>
-      <p style={styles.paragraph}>{question.task}</p>
+      <Paragraph text={question.task} />
+
       <hr></hr>
       <strong style={styles.strong}>Input:</strong>
-      <p style={styles.paragraph}>{question.inputFormat}</p>
-      <BlackLabel title="exemplo" content={question.inputExample} />
+      <Paragraph text={question.inputFormat} />
+
+      <BlackLabel
+        title="exemplo"
+        content={question.inputExample}
+        type="input"
+      />
 
       <strong style={styles.strong}>Output:</strong>
-      <p style={styles.paragraph}>{question.outputFormat}</p>
-      <BlackLabel title="exemplo" content={question.outputExample} />
+      <Paragraph text={question.outputFormat} />
 
-      <strong style={styles.strong}>Explicação:</strong>
-      <p style={styles.paragraph}>{question.explanation}</p>
+      <BlackLabel
+        title="exemplo"
+        content={question.outputExample}
+        type="output"
+      />
     </div>
   );
 };

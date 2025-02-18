@@ -1,12 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import useUserProfile from "../hooks/useUserProfile";
+import { FaCheckCircle } from "react-icons/fa";
+import LevelIndicator from "../layout/components/LevelIndicator";
+import QuestionButton from "../question/QuestionButton";
+import Title from "../layout/components/Title";
+import Span from "../layout/components/Span";
 
 const getLevelStyle = (level) => {
   if (!level) return "ADVANCED";
   return level.toUpperCase();
 };
 
-const QuestionItem = ({ question }) => {
+const QuestionItem = ({ question, showDetails = true }) => {
+  const { profile, isLoading, errorMessage } = useUserProfile(1);
+  const questionsSolved = profile?.questionsSolved || [];
+  const isSolved = questionsSolved.includes(question.id);
+
   const styles = {
     questionBox: {
       backgroundColor: "rgb(32,36,44)",
@@ -25,7 +35,7 @@ const QuestionItem = ({ question }) => {
     },
     questionInfo: {
       fontSize: "14px",
-      width: "70%",
+      width: showDetails ? "70%" : "100%",
     },
     questionTitle: {
       fontSize: "1.5rem",
@@ -59,25 +69,15 @@ const QuestionItem = ({ question }) => {
       overflow: "hidden",
       WebkitLineClamp: 2,
       whiteSpace: "normal",
+      fontFamily: "'Open Sans', 'Roboto', sans-serif",
     },
     actions: {
       position: "absolute",
       bottom: "1.5rem",
       right: "1.5rem",
     },
-    solveButton: {
-      padding: "0.75rem 1.5rem",
-      backgroundColor: "#38a169",
-      color: "#f7fafc",
-      color: "black",
-      fontWeight: "200",
-      borderRadius: "0.5rem",
-      border: "none",
-      cursor: "pointer",
-      transition: "background-color 0.3s ease",
-    },
-    solveButtonHover: {
-      backgroundColor: "#2f855a",
+    a: {
+      fontFamily: "'Open Sans', 'Roboto', sans-serif",
     },
   };
 
@@ -85,41 +85,19 @@ const QuestionItem = ({ question }) => {
     <div style={styles.questionBox} className="question-box">
       <div style={styles.questionHeader}>
         <div style={styles.questionInfo}>
-          <h1 style={styles.questionTitle}>{question.title}</h1>
+          <Title text={question.title} />
           <p style={styles.difficultyInfo}>
-            <span
-              style={{
-                ...styles.difficulty,
-                ...(getLevelStyle(question.level) === "INITIAL"
-                  ? styles.difficultyInitial
-                  : getLevelStyle(question.level) === "INTERMEDIATE"
-                  ? styles.difficultyIntermediate
-                  : styles.difficultyAdvanced),
-              }}
-            >
-              {question.level || "ADVANCED"}
-            </span>
-            <span>Max Score: {question.points}</span>
+            <LevelIndicator level={question.level} />
+            <Span title={"Max Score: "} text={question.points} />
           </p>
-          <p style={styles.description}>{question.description}</p>
+          {showDetails ? (
+            <p style={styles.description}>{question.description}</p>
+          ) : (
+            <></>
+          )}
         </div>
         <div style={styles.actions}>
-          <Link to={`/questions/get/${question.id}`}>
-            <button
-              style={styles.solveButton}
-              className="solve-button"
-              onMouseEnter={(e) =>
-                (e.target.style.backgroundColor =
-                  styles.solveButtonHover.backgroundColor)
-              }
-              onMouseLeave={(e) =>
-                (e.target.style.backgroundColor =
-                  styles.solveButton.backgroundColor)
-              }
-            >
-              Solve Challenge
-            </button>
-          </Link>
+          <QuestionButton isSolved={isSolved} questionId={question.id} />
         </div>
       </div>
     </div>

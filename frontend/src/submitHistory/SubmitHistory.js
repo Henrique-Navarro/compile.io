@@ -16,7 +16,7 @@ const SubmitHistory = () => {
     date: "",
   });
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <></>;
 
   const toggleVisibility = (submissionId) => {
     if (visibleSubmissions.includes(submissionId)) {
@@ -65,22 +65,42 @@ const SubmitHistory = () => {
     return date.toLocaleDateString("pt-BR", options);
   };
 
-  // Filtrando as submissões com base nos filtros selecionados
-  const filteredHistory = history.filter((submission) => {
-    const languageMatch = filters.language
-      ? submission.language === filters.language
-      : true;
-    const statusMatch = filters.status
-      ? filters.status === "passed"
-        ? !submission.hasErrors
-        : submission.hasErrors
-      : true;
-    const dateMatch = filters.date
-      ? submission.createdAt.includes(filters.date)
-      : true;
+  const getUniqueSubmissionsByLanguage = (submissions) => {
+    const languages = ["php", "python", "javascript"];
+    const uniqueSubmissions = [];
 
-    return languageMatch && statusMatch && dateMatch;
-  });
+    languages.forEach((language) => {
+      const submission = submissions.find(
+        (sub) => sub.language.toLowerCase() === language
+      );
+      if (submission) {
+        uniqueSubmissions.push(submission);
+      }
+    });
+
+    return uniqueSubmissions;
+  };
+
+  // Filtrando as submissões com base nos filtros selecionados
+  const filteredHistory = getUniqueSubmissionsByLanguage(
+    history.filter((submission) => {
+      const languageMatch = filters.language
+        ? submission.language === filters.language
+        : true;
+      const statusMatch = filters.status
+        ? filters.status === "passed"
+          ? !submission.hasErrors
+          : submission.hasErrors
+        : true;
+      const dateMatch = filters.date
+        ? submission.createdAt.includes(filters.date)
+        : true;
+
+      return languageMatch && statusMatch && dateMatch;
+    })
+  );
+
+  // Filtrando as submissões com base nos filtros selecionados
 
   const styles = {
     box: {
@@ -91,6 +111,8 @@ const SubmitHistory = () => {
       color: "#e2e8f0",
       marginBottom: "2rem",
       maxWidth: "1500px",
+      fontFamily: "'Open Sans', 'Roboto', sans-serif",
+      fontWeight: "100",
     },
     header: {
       display: "flex",

@@ -12,7 +12,7 @@ const Question = () => {
   const { question, loading, error } = useFetchQuestion(questionId);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <></>;
   }
 
   return (

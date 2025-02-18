@@ -17,6 +17,7 @@ import useLogin from "./hooks/useLogin";
 import { UserProvider } from "./login/UserContext";
 import KitsList from "./kits/KitsList";
 import Kit from "./kits/Kit";
+import SignUpForm from "./login/SignUpForm";
 
 const App = () => {
   return (
@@ -42,6 +43,7 @@ const AppContent = () => {
       )}
       <Routes>
         <Route path="/login" element={<LoginForm onLogin={login} />} />
+        <Route path="/signup" element={<SignUpForm />} />
         <Route
           path="/"
           element={

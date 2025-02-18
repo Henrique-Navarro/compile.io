@@ -31,7 +31,7 @@ const QuestionsList = () => {
   };
 
   if (loading || profileLoading) {
-    return <div>Loading...</div>;
+    return <></>;
   }
 
   if (error || errorMessage) {

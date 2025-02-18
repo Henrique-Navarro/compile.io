@@ -70,7 +70,11 @@ public class Question {
     @OneToMany(mappedBy = "question", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<TestCase> testCases = new ArrayList<>();
 
-    public Question(Long id, String title, String description, String objective, String task, String explanation, String inputFormat, String inputExample, String outputExample, String outputFormat, List<BaseCode> baseCodes, CorrectCode correctCode, Category category, Level level, int points, List<TestCase> testCases) {
+    @NotEmpty(message = "Output format example is required")
+    @Column(length = 1000)
+    private String hint;
+
+    public Question(Long id, String title, String description, String objective, String task, String explanation, String inputFormat, String inputExample, String outputExample, String outputFormat, List<BaseCode> baseCodes, CorrectCode correctCode, Category category, Level level, int points, List<TestCase> testCases, String hint) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -87,6 +91,7 @@ public class Question {
         this.level = level;
         this.points = points;
         this.testCases = testCases;
+        this.hint = hint;
     }
 
     public Question() {
@@ -220,6 +225,14 @@ public class Question {
         this.points = points;
     }
 
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
+    }
+
     @Override
     public String toString() {
         return "Question{" +
@@ -228,6 +241,7 @@ public class Question {
                 ", description='" + description + '\'' +
                 ", objective='" + objective + '\'' +
                 ", task='" + task + '\'' +
+                ", explanation='" + explanation + '\'' +
                 ", inputFormat='" + inputFormat + '\'' +
                 ", inputExample='" + inputExample + '\'' +
                 ", outputExample='" + outputExample + '\'' +
@@ -238,6 +252,7 @@ public class Question {
                 ", level=" + level +
                 ", points=" + points +
                 ", testCases=" + testCases +
+                ", hint='" + hint + '\'' +
                 '}';
     }
 

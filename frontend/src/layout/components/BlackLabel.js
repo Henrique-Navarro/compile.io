@@ -1,10 +1,8 @@
 import React from "react";
 
-const BlackLabel = ({ title, content }) => {
+const BlackLabel = ({ title, content, type }) => {
   const noMessage =
-    title === "Input" || title === "Input example"
-      ? "~ no input provided ~"
-      : "~ no response on stdout ~";
+    type === "input" ? "~ no input provided ~" : "~ no response on stdout ~";
 
   const isEmptyOrWhitespace = (content) => {
     return !content || content.trim() === "" || content.trim() === "''";
@@ -33,7 +31,7 @@ const styles = {
   strong: {
     fontFamily: "'Open Sans', 'Roboto', sans-serif",
     fontWeight: "500",
-    fontSize: "13px",
+    fontSize: "14px",
   },
 };
 

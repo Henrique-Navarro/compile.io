@@ -15,10 +15,6 @@ public class CompilerService {
     /**
      * Creates a temp file, and runs the code on container
      * The Process with command, invokes container and run code
-     *
-     * @param codeDTO
-     * @param input
-     * @return ProcessOutputDTO
      */
     public ProcessOutputDTO compile(CodeDTO codeDTO, String input) {
         try {

@@ -43,57 +43,101 @@ const LoginForm = ({ onLogin }) => {
             style={styles.input}
           />
         </div>
-        <button type="submit" style={styles.button} disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
-        </button>
+        <div style={styles.box}>
+          <button
+            type="button"
+            style={{
+              ...styles.button,
+              backgroundColor: "#28a745",
+              border: "none",
+            }}
+            onClick={() => navigate("/signup")}
+          >
+            Create Account
+          </button>
+
+          <button type="submit" style={styles.button} disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
+        </div>
       </form>
     </div>
   );
 };
 
 const styles = {
+  box: {
+    display: "flex",
+    padding: "",
+    gap: "20px",
+  },
   header: {
-    color: "black",
+    color: "#ffffff",
+    fontSize: "24px",
+    marginBottom: "20px",
+    textAlign: "center",
+    fontWeight: "bold",
   },
   container: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     height: "100vh",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#18141c",
+    padding: "20px",
   },
   form: {
-    backgroundColor: "#fff",
-    padding: "20px",
-    borderRadius: "8px",
-    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+    backgroundColor: "#20242c",
+    padding: "30px",
+    borderRadius: "10px",
     maxWidth: "400px",
     width: "100%",
+    boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
   },
   field: {
-    marginBottom: "15px",
-    color: "black",
+    marginBottom: "20px",
+    color: "#ffffff",
+    fontSize: "14px",
+    fontWeight: "bold",
   },
   input: {
-    width: "100%",
-    padding: "10px",
-    marginTop: "5px",
-    border: "1px solid #ddd",
-    borderRadius: "4px",
+    width: "95%",
+    padding: "12px",
+    marginTop: "8px",
+    border: "1px solid #444",
+    borderRadius: "5px",
+    backgroundColor: "#2b2f3a",
+    color: "#ffffff",
+    fontSize: "14px",
+    resize: "none",
+    transition: "border-color 0.3s ease",
+  },
+  inputFocus: {
+    border: "none",
   },
   button: {
     width: "100%",
-    padding: "10px",
-    backgroundColor: "#007bff",
-    color: "#fff",
-    border: "none",
-    borderRadius: "4px",
+    padding: "12px",
+    backgroundColor: "transparent",
+    border: "1px solid white",
+    color: "#ffffff",
+    borderRadius: "5px",
     cursor: "pointer",
     fontSize: "16px",
+    fontWeight: "bold",
+    transition: "background-color 0.3s ease",
   },
   error: {
     color: "red",
     marginBottom: "15px",
+    fontSize: "14px",
+    textAlign: "center",
+  },
+  message: {
+    color: "#28a745",
+    marginBottom: "15px",
+    fontSize: "14px",
+    textAlign: "center",
   },
 };
 

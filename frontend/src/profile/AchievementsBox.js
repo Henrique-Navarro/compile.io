@@ -8,6 +8,7 @@ import {
   FaChevronDown,
 } from "react-icons/fa";
 import Achievement from "./Achievement";
+import Title from "../layout/components/Title";
 
 const AchievementsBox = ({ achievements }) => {
   const [isVisible, setIsVisible] = useState(true);
@@ -19,7 +20,7 @@ const AchievementsBox = ({ achievements }) => {
   return (
     <div style={styles.box}>
       <div style={styles.header} onClick={toggleVisibility}>
-        <h2 style={styles.boxTitle}>Conquistas</h2>
+        <Title text={"Conquistas"} bold={false} />
         <FaChevronDown
           style={{
             ...styles.toggleIcon,

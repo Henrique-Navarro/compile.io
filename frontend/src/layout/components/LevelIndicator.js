@@ -7,17 +7,24 @@ const getDifficultyStyle = (level) => {
     ADVANCED: { color: "#e53e3e", text: "ADVANCED" },
   };
 
-  return styles[level.toUpperCase()] || styles.ADVANCED;
+  const defaultStyle = {
+    fontFamily: "'Open Sans', 'Roboto', sans-serif",
+    fontWeight: "500",
+    marginRight: "0.5rem",
+  };
+
+  const style = styles[level.toUpperCase()];
+  return {
+    ...defaultStyle,
+    color: style.color,
+    text: style.text,
+  };
 };
 
 const LevelIndicator = ({ level }) => {
-  const { color, text } = getDifficultyStyle(level);
+  const { text, ...style } = getDifficultyStyle(level);
 
-  return (
-    <span style={{ fontWeight: "600", marginRight: "0.5rem", color }}>
-      {text}
-    </span>
-  );
+  return <span style={style}>{text}</span>;
 };
 
 export default LevelIndicator;

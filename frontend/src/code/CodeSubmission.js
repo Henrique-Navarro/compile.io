@@ -134,8 +134,7 @@ const CodeSubmission = ({ question }) => {
                 boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
               }}
             >
-              <strong>Dica:</strong> {question.hint}bla bla bla bla bla blabla
-              bla blabla bla bla
+              <strong>DICA:</strong> {question.hint}
               <div
                 style={{
                   position: "absolute",
@@ -166,7 +165,7 @@ const CodeSubmission = ({ question }) => {
               }}
             >
               {isLampOn ? (
-                <FaLightbulb size={20} color="yellow" />
+                <FaLightbulb size={20} color="#f7f06d" />
               ) : (
                 <FaRegLightbulb size={20} color="white" />
               )}
